@@ -251,3 +251,30 @@
 \setlength{\textfloatsep}{15pt}
 
 \setlength{\bibsep}{3pt}
+
+% ── Halaman Kosong ───────────────────────────────────────────
+% Halaman kosong pada cetak bolak-balik diberi keterangan
+\makeatletter
+\newif\if@mainmatter
+\@mainmatterfalse
+\def\cleardoublepage{%
+  \clearpage
+  \if@twoside
+  \ifodd\c@page\else
+  \hbox{}
+  \vspace*{\fill}
+  \begin{center}
+    \textit{Halaman ini sengaja dikosongkan}
+  \end{center}
+  \vspace{\fill}
+  \if@mainmatter
+  \thispagestyle{fancy}  % sudah masuk konten, tampilkan nomor
+  \else
+  \thispagestyle{empty}  % masih prelim sebelum roman, sembunyikan
+  \fi
+  \newpage
+  \if@twocolumn\hbox{}\newpage\fi
+  \fi
+  \fi
+}
+\makeatother
