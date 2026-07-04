@@ -1,25 +1,13 @@
 %============================================================
-% FORMATTING
-% Semua pengaturan tampilan dan layout dokumen.
-% File ini di-input setelah packages.tex dan variables.tex.
+% FORMATTING: BASE LAYER (SHARED)
+% Aturan yang 100% sama di Proposal, Progres, dan Buku PA.
+% Aturan per-dokumen (geometry, spacing) ada di formats/format_*.tex
+% yang di-input SETELAH file ini di masing-masing main_*.tex.
 %============================================================
 
 % ── Warna Institusi ──────────────────────────────────────────
 \definecolor{pensbiru}{RGB}{0, 47, 167}    % Biru PENS (#002FA7)
 \definecolor{penskuning}{RGB}{255, 193, 7} % Kuning/emas garis cover
-
-% ── Geometri Halaman (Mirror Margin) ─────────────────────────
-\geometry{
-  a4paper,
-  top    = 3cm,
-  bottom = 3cm,
-  inner  = 4cm,  % Margin kiri pada halaman ganjil (sisi jilid)
-  outer  = 3cm,  % Margin kanan pada halaman ganjil
-  twoside
-}
-
-% ── Spasi Baris ──────────────────────────────────────────────
-\onehalfspacing % Spasi 1,5 sesuai panduan
 
 % ── Indentasi & Paragraf ─────────────────────────────────────
 \setlength{\parindent}{1.27cm}
@@ -144,27 +132,6 @@
   \renewcommand{\headrulewidth}{0pt}
 }
 
-% ── Halaman Kosong ───────────────────────────────────────────
-% Halaman kosong pada cetak bolak-balik diberi keterangan
-\makeatletter
-\def\cleardoublepage{%
-  \clearpage
-  \if@twoside
-  \ifodd\c@page\else
-  \hbox{}
-  \vspace*{\fill}
-  \begin{center}
-    \textit{Halaman ini sengaja dikosongkan}
-  \end{center}
-  \vspace{\fill}
-  \thispagestyle{fancy}
-  \newpage
-  \if@twocolumn\hbox{}\newpage\fi
-  \fi
-  \fi
-}
-\makeatother
-
 % ── Lingkungan Kutipan Panjang (> 2 baris) ───────────────────
 % Font 10pt, margin kanan-kiri masuk 10mm, ditulis miring
 \newenvironment{kutipanpanjang}{%
@@ -275,6 +242,29 @@
   \newpage
   \if@twocolumn\hbox{}\newpage\fi
   \fi
+  \fi
+}
+
+% ── Paksa Halaman Ganjil (oneside & twoside) ─────────────────
+% \cleartooddpage: lompat ke halaman ganjil berikutnya.
+% Jika halaman saat ini sudah ganjil, tidak melakukan apa-apa.
+% Jika genap, sisipkan halaman kosong bertuliskan keterangan
+% lalu lanjutkan ke halaman ganjil berikutnya.
+\newcommand{\cleartooddpage}{%
+  \clearpage
+  \ifodd\c@page\else
+    \hbox{}
+    \vspace*{\fill}
+    \begin{center}
+      \textit{Halaman ini sengaja dikosongkan}
+    \end{center}
+    \vspace{\fill}
+    \if@mainmatter
+      \thispagestyle{fancy}  % konten utama: tampilkan nomor halaman
+    \else
+      \thispagestyle{empty}  % prelim: sembunyikan nomor halaman
+    \fi
+    \newpage
   \fi
 }
 \makeatother

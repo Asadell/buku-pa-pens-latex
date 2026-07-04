@@ -1,29 +1,33 @@
 %============================================================
-% TEMPLATE PROYEK AKHIR — PENS
-% Politeknik Elektronika Negeri Surabaya
-% Berdasarkan Panduan Buku PA Sarjana Terapan A4 Rev05
-%============================================================
-% CARA PENGGUNAAN:
-%   1. Buka config/variables.tex dan isi semua data Anda.
-%   2. Tulis konten di folder chapters/ dan pages/.
-%   3. Compile file ini (main.tex) dengan pdflatex + bibtex.
+% RUNNER: BUKU PROYEK AKHIR
+% Compile: pdflatex main_buku.tex (3x) + bibtex main_buku
+% Output : main_buku.pdf
+%
+% Isi lengkap: cover, halaman judul, pengesahan, semua front
+% matter, Bab 1-5, daftar pustaka, lampiran.
 %============================================================
 
 \documentclass[12pt, a4paper, twoside, openright, fleqn]{report}
 
-% ── Konfigurasi (urutan penting: variables → packages → formatting) ──
+% ── Konfigurasi (urutan penting) ─────────────────────────────
 \input{config/variables}
+\input{config/toggles}
+
+% ── Aktifkan khusus Buku PA ───────────────────────────────────
+\bukupatrue   % Tampilkan Batasan Masalah di Bab 1
+
 \input{config/packages}
-\input{config/formatting}
+\input{config/formatting}     % base layer: aturan shared
+\input{formats/format_buku}   % per-dokumen: geometry + spacing
 
 %============================================================
 \begin{document}
 %============================================================
 
 % ── Halaman Sampul & Judul ───────────────────────────────────
-\input{pages/cover}
-\input{pages/halaman_judul}
-\input{pages/pengesahan}
+\input{formats/cover_buku}
+\input{formats/halaman_judul}
+\input{formats/pengesahan}
 
 % ── Halaman Prelim (penomoran romawi kecil) ──────────────────
 \cleardoublepage
@@ -31,10 +35,9 @@
 \pagenumbering{roman}
 \setcounter{page}{1}
 \makeatletter\@mainmattertrue\makeatother
-\onehalfspacing
-
 \input{pages/orisinalitas}
 \input{pages/hak_cipta}
+
 \input{pages/abstrak}
 \input{pages/abstract}
 \input{pages/kata_pengantar}
@@ -45,7 +48,7 @@
 
 \cleardoublepage
 \begingroup
-\renewcommand*{\addvspace}[1]{} % Hapus spasi ekstra antar entri
+\renewcommand*{\addvspace}[1]{}
 \listoffigures
 \endgroup
 \addcontentsline{toc}{chapter}{DAFTAR GAMBAR}
@@ -62,6 +65,8 @@
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
+% Tentukan file sistematika sesuai jenis dokumen ini
+\newcommand{\SistematikaFile}{pages/sistematika_5bab}
 \input{chapters/bab1}
 \input{chapters/bab2}
 \input{chapters/bab3}
@@ -72,8 +77,8 @@
 \cleardoublepage
 \addcontentsline{toc}{chapter}{DAFTAR PUSTAKA}
 \renewcommand{\bibname}{DAFTAR PUSTAKA}
-\bibliographystyle{IEEEtranN}
-\bibliography{references}
+\bibliographystyle{refs/IEEEtranN}
+\bibliography{refs/references}
 
 % ── Lampiran ─────────────────────────────────────────────────
 \input{pages/lampiran}
