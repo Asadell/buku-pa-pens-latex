@@ -160,7 +160,7 @@ uncomment baris yang diinginkan di `main_proposal.tex` atau `main_progres.tex`:
 ```latex
 \showabstraktrue         % Tampilkan Abstrak Bahasa Indonesia
 \showabstracttrue        % Tampilkan Abstract Bahasa Inggris
-\showdaftarIsitrue       % Tampilkan Daftar Isi
+\showdaftarisitrue       % Tampilkan Daftar Isi
 \showdaftargambartrue    % Tampilkan Daftar Gambar
 \showdaftartabeltrue     % Tampilkan Daftar Tabel
 ```
@@ -230,7 +230,7 @@ dengan uncomment baris berikut:
 ```latex
 \showabstraktrue         % Tampilkan Abstrak Bahasa Indonesia
 \showabstracttrue        % Tampilkan Abstract Bahasa Inggris
-\showdaftarIsitrue       % Tampilkan Daftar Isi
+\showdaftarisitrue       % Tampilkan Daftar Isi
 \showdaftargambartrue    % Tampilkan Daftar Gambar
 \showdaftartabeltrue     % Tampilkan Daftar Tabel
 ```
