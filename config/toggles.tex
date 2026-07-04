@@ -1,0 +1,33 @@
+%============================================================
+% TOGGLES: Boolean Switch Front Matter Opsional
+% Default: FALSE, semua seksi opsional tidak ditampilkan.
+% Override di main_*.tex jika diperlukan.
+%============================================================
+
+% Toggle Front Matter Opsional
+% Set ke true untuk menampilkan seksi yang diinginkan.
+\newif\ifshowabstrak       \showabstrakfalse       % Abstrak (ID)
+\newif\ifshowabstract      \showabstractfalse      % Abstract (EN)
+\newif\ifshowkatapengantar \showkatapengantarfalse % Kata Pengantar
+\newif\ifshowdaftarisi     \showdaftarisifalse     % Daftar Isi
+\newif\ifshowdaftargambar  \showdaftargambarfalse  % Daftar Gambar
+\newif\ifshowdaftartabel   \showdaftartabelfalse   % Daftar Tabel
+
+% Toggle Tipe Dokumen
+% \proposaltrue  -> kompilasi sebagai Proposal PA (Bab 1-3 saja)
+% \proposalfalse -> kompilasi sebagai Progres PA / Buku PA (Bab 1-5)
+\newif\ifproposal          \proposalfalse
+
+% Toggle Paksa Halaman Ganjil
+% Jika true, setiap bab dan seksi front matter selalu dimulai
+% di halaman ganjil (sisipkan halaman kosong jika perlu).
+% Buku PA: aktif otomatis (openright).
+% Proposal & Progres: default false (oneside, tidak memerlukan ini).
+% Aktifkan dengan menambahkan \showforceoddpagetrue di main_*.tex.
+\newif\ifshowforceoddpage  \showforceoddpagefalse
+
+% Toggle Jenis Dokumen: Buku PA
+% true  -> Buku PA (ada Batasan Masalah di Bab 1, seksi lengkap)
+% false -> Proposal / Progres (tanpa Batasan Masalah)
+% Diset true di main_buku.tex sebelum \input{config/toggles}.
+\newif\ifbukupa            \bukupafalse
