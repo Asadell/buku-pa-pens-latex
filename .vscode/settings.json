@@ -1,0 +1,41 @@
+{
+  // ── LaTeX Workshop: konfigurasi build & output ──────────────────
+  // Semua file sementara LaTeX diarahkan ke folder build/
+  // sesuai dengan .latexmkrc dan Makefile project ini.
+
+  // Gunakan latexmk dengan outdir eksplisit ke build/
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk",
+      "command": "latexmk",
+      "args": [
+        "-pdf",
+        "-outdir=build",
+        "-auxdir=build",
+        "-interaction=nonstopmode",
+        "-synctex=1",
+        "%DOC%"
+      ]
+    }
+  ],
+
+  // Recipe default: gunakan latexmk di atas
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "latexmk (build/)",
+      "tools": ["latexmk"]
+    }
+  ],
+
+  // Jangan auto-build saat file disimpan — gunakan make proposal/progres/buku
+  "latex-workshop.latex.autoBuild.run": "never",
+
+  // Jangan auto-clean, biarkan Makefile yang mengurus
+  "latex-workshop.latex.autoClean.run": "never",
+
+  // SyncTeX: arahkan ke build/ agar forward/inverse search tetap bekerja
+  "latex-workshop.synctex.afterBuild.enabled": true,
+
+  // PDF viewer: buka dari build/ atau output/ (sesuaikan jika perlu)
+  "latex-workshop.latex.outDir": "build"
+}
