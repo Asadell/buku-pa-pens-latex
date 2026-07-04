@@ -259,7 +259,11 @@
       \textit{Halaman ini sengaja dikosongkan}
     \end{center}
     \vspace{\fill}
-    \thispagestyle{fancy}
+    \if@mainmatter
+      \thispagestyle{fancy}  % konten utama: tampilkan nomor halaman
+    \else
+      \thispagestyle{empty}  % prelim: sembunyikan nomor halaman
+    \fi
     \newpage
   \fi
 }
