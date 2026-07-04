@@ -1,0 +1,105 @@
+%============================================================
+% RUNNER: PROGRES PROYEK AKHIR
+% Output : output/progres/Progres_PA_*.pdf
+%
+% Isi:
+%   - Cover Progres PA (putih, logo grayscale)
+%   - Bab 1 (Pendahuluan) s.d. Bab 5 (Penutup)
+%   - Daftar Pustaka, Lampiran
+%
+% Format: single-sided, margin 2.5/3.0cm (Panduan PASPE-2022)
+%============================================================
+
+\documentclass[12pt, a4paper, oneside, fleqn]{report}
+
+% ============================================================
+% KONFIGURASI OPSIONAL: Uncomment untuk mengaktifkan
+% ============================================================
+% Front matter (default semua off):
+% \showabstraktrue         % Tampilkan Abstrak Bahasa Indonesia
+% \showabstracttrue        % Tampilkan Abstract Bahasa Inggris
+% \showdaftarIsitrue       % Tampilkan Daftar Isi
+% \showdaftargambartrue    % Tampilkan Daftar Gambar
+% \showdaftartabeltrue     % Tampilkan Daftar Tabel
+%
+% Paksa setiap konten baru ke halaman ganjil (default off):
+% \showforceoddpagetrue
+% ============================================================
+
+% Konfigurasi (urutan penting)
+\input{config/variables}
+\input{config/toggles}
+\input{config/packages}
+\input{config/formatting}       % base layer: aturan shared
+\input{formats/format_progres}  % per-dokumen: geometry + spacing
+
+%============================================================
+\begin{document}
+%============================================================
+
+% Cover Progres
+\input{formats/cover_progres}
+
+% Penomoran halaman: langsung Arabic dari hal. 1
+\ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+\pagestyle{fancy}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\makeatletter\@mainmattertrue\makeatother
+\onehalfspacing
+
+% Front Matter Opsional
+\ifshowabstrak
+  \ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+  \input{pages/abstrak}
+\fi
+
+\ifshowabstract
+  \ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+  \input{pages/abstract}
+\fi
+
+\ifshowdaftarisi
+  \ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+  \tableofcontents
+\fi
+
+\ifshowdaftargambar
+  \ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+  \begingroup
+  \renewcommand*{\addvspace}[1]{}
+  \listoffigures
+  \endgroup
+  \addcontentsline{toc}{chapter}{DAFTAR GAMBAR}
+\fi
+
+\ifshowdaftartabel
+  \ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+  \begingroup
+  \renewcommand*{\addvspace}[1]{}
+  \listoftables
+  \endgroup
+  \addcontentsline{toc}{chapter}{DAFTAR TABEL}
+\fi
+
+% Bab Utama (Progres: Bab 1-5)
+\newcommand{\SistematikaFile}{pages/sistematika_5bab}
+\input{chapters/bab1}
+\input{chapters/bab2}
+\input{chapters/bab3}
+\input{chapters/bab4}
+\input{chapters/bab5}
+
+% Daftar Pustaka
+\ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+\addcontentsline{toc}{chapter}{DAFTAR PUSTAKA}
+\renewcommand{\bibname}{DAFTAR PUSTAKA}
+\bibliographystyle{refs/IEEEtranN}
+\bibliography{refs/references}
+
+% Lampiran
+\input{pages/lampiran}
+
+%============================================================
+\end{document}
+%============================================================
