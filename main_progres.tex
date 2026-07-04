@@ -32,6 +32,17 @@
 
 % Override toggle SETELAH config/toggles (aktifkan jika diperlukan)
 % \proposalfalse -- progres tidak pakai toggle proposal
+% ── Opsi Front Matter & Layout ─────────────────────────────────
+% Secara default dinonaktifkan. Hapus tanda % (uncomment) pada
+% baris di bawah ini untuk mengaktifkan fitur yang diinginkan.
+% Baca [README.md](README.md) untuk detail selengkapnya.
+% \showabstraktrue         % Tampilkan Abstrak Bahasa Indonesia
+% \showabstracttrue        % Tampilkan Abstract Bahasa Inggris
+% \showkatapengantartrue   % Tampilkan Kata Pengantar
+% \showdaftarisitrue       % Tampilkan Daftar Isi
+% \showdaftargambartrue    % Tampilkan Daftar Gambar
+% \showdaftartabeltrue     % Tampilkan Daftar Tabel
+% \showforceoddpagetrue    % Paksa setiap konten baru ke halaman ganjil
 
 \input{config/packages}
 \input{config/formatting}       % base layer: aturan shared
@@ -45,11 +56,22 @@
 \input{formats/cover_progres}
 
 % ── Front Matter: penomoran Romawi kecil ─────────────────────
-\ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+% Halaman kosong di belakang cover TIDAK bernomor (thispagestyle empty).
+% Penomoran Romawi mulai dari i pada konten front matter pertama.
 \pagestyle{fancy}
+\onehalfspacing
+\ifshowforceoddpage
+  % Sisipkan halaman kosong tanpa nomor di belakang cover
+  \clearpage
+  \hbox{}
+  \vspace*{\fill}
+  \begin{center}\textit{Halaman ini sengaja dikosongkan}\end{center}
+  \vspace{\fill}
+  \thispagestyle{empty}
+  \newpage
+\fi
 \pagenumbering{roman}
 \setcounter{page}{1}
-\onehalfspacing
 
 % Front Matter Opsional
 \ifshowabstrak
@@ -62,9 +84,17 @@
   \input{pages/abstract}
 \fi
 
+\ifshowkatapengantar
+  \ifshowforceoddpage\cleartooddpage\else\clearpage\fi
+  \input{pages/kata_pengantar}
+\fi
+
 \ifshowdaftarisi
   \ifshowforceoddpage\cleartooddpage\else\clearpage\fi
-  \tableofcontents
+  \begingroup
+    \renewcommand{\addcontentsline}[3]{}
+    \tableofcontents
+  \endgroup
 \fi
 
 \ifshowdaftargambar
