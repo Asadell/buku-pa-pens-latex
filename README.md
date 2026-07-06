@@ -4,6 +4,8 @@ Template LaTeX untuk penulisan dokumen Proyek Akhir (PA) Program Sarjana Terapan
 Politeknik Elektronika Negeri Surabaya (PENS). Mendukung 3 jenis dokumen dari
 satu sumber konten yang sama: **Proposal PA**, **Progres PA**, dan **Buku PA**.
 
+> 📗 Butuh template untuk **Kerja Praktik (KP)**? → [ristekhimitpens/buku-kp-pens-latex](https://github.com/ristekhimitpens/buku-kp-pens-latex)
+
 ---
 
 ## Persyaratan
@@ -13,6 +15,99 @@ satu sumber konten yang sama: **Proposal PA**, **Progres PA**, dan **Buku PA**.
 - Bibliography: `bibtex`
 - Build tool: `make` (direkomendasikan)
 - Editor: VS Code + LaTeX Workshop, atau Overleaf
+
+---
+
+## Setup Editor: VS Code + LaTeX Workshop
+
+Cara paling nyaman untuk menulis dokumen ini adalah menggunakan **VS Code** dengan
+extension [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop).
+
+### Instalasi
+
+1. Install extension **LaTeX Workshop** (`James-Yu.latex-workshop`) di VS Code.
+2. Pastikan `latexmk`, `pdflatex`, dan `bibtex` tersedia di PATH
+   (sudah terpenuhi jika TeX Live atau MiKTeX terinstall).
+
+### Mengapa perlu setup User Settings?
+
+Setting LaTeX Workshop (`latex.tools`, `latex.recipes`, `latex.outDir`) bersifat **window-scoped** —
+tidak bisa berbeda per-folder. File `.vscode/settings.json` di dalam project ini **tidak akan aktif**
+jika VS Code dibuka dari folder parent. Satu-satunya cara agar config ini berlaku di semua kondisi
+adalah menaruhnya di **User Settings** global (**satu kali saja**).
+
+### Setup (satu kali, berlaku permanen)
+
+1. Buka `Ctrl+Shift+P` → ketik **"Preferences: Open User Settings (JSON)"** → Enter.
+2. Tambahkan konfigurasi berikut:
+
+```json
+{
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk",
+      "command": "latexmk",
+      "args": [
+        "-pdf",
+        "-outdir=build",
+        "-auxdir=build",
+        "-interaction=nonstopmode",
+        "-synctex=1",
+        "%DOC%"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    { "name": "latexmk (build/)", "tools": ["latexmk"] }
+  ],
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latex.autoClean.run": "never",
+  "latex-workshop.synctex.afterBuild.enabled": true,
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.view.pdf.ref.viewer": "auto",
+  "latex-workshop.latex.outDir": "build"
+}
+```
+
+### Kompilasi Pertama Kali
+
+Sebelum preview bisa dibuka, PDF harus ada terlebih dahulu. Jalankan sekali via terminal:
+
+```bash
+make proposal   # atau: make progres / make buku
+```
+
+### Live Preview (Watch Mode)
+
+Setelah PDF pertama tersedia:
+
+1. Buka salah satu file root (`main_proposal.tex`, `main_progres.tex`, atau `main_buku.tex`) di editor.
+2. Buka PDF preview dengan shortcut:
+
+   | Aksi | Shortcut |
+   |------|----------|
+   | Buka PDF preview di tab VS Code | `Ctrl+Alt+V` |
+   | Forward search (editor → PDF) | `Ctrl+Alt+J` |
+   | Backward search (PDF → editor) | `Ctrl+klik` di PDF |
+
+3. Setiap kali file `.tex` disimpan (`Ctrl+S`), LaTeX Workshop akan **otomatis meng-compile** dan **merefresh PDF** di tab preview. File intermediate masuk ke `build/`, bukan root folder.
+
+> **Penting**: Pastikan file yang aktif di editor adalah file `main_*.tex` (bukan
+> file chapter atau pages), karena LaTeX Workshop menentukan root file dari file
+> yang sedang aktif. Jika compile gagal karena root file salah, tambahkan magic
+> comment berikut di bagian atas file chapter yang sedang diedit:
+> ```latex
+> %!TeX root = ../main_proposal.tex
+> ```
+
+### SyncTeX (Sinkronisasi Kursor Dua Arah)
+
+SyncTeX memungkinkan navigasi langsung antara kode sumber dan PDF:
+
+- **Editor → PDF**: Tekan `Ctrl+Alt+J` di editor untuk melompat ke posisi tersebut di PDF.
+- **PDF → Editor**: `Ctrl+klik` di PDF viewer untuk melompat ke baris kode sumber yang sesuai.
+
+
 
 ---
 
@@ -146,6 +241,7 @@ secara otomatis sehingga root project selalu bersih.
 | Cetak                       | 1 muka (oneside) | 1 muka (oneside) | Bolak-balik (twoside) |
 | Margin kiri                 | 3,0 cm           | 3,0 cm           | 4,0 cm (jilid)   |
 | Margin atas/bawah/kanan     | 2,5 cm           | 2,5 cm           | 3,0 cm           |
+| Spasi baris                 | 1,15 spasi       | 1,15 spasi       | 1,5 spasi        |
 | Indentasi paragraf          | 0,75 cm          | 0,75 cm          | 1,27 cm          |
 
 ---
@@ -155,14 +251,15 @@ secara otomatis sehingga root project selalu bersih.
 ### Toggle Front Matter (Proposal & Progres)
 
 Front matter Proposal dan Progres default **semua off**. Aktifkan dengan
-uncomment baris yang diinginkan di `main_proposal.tex` atau `main_progres.tex`:
+uncomment baris yang diinginkan di [main_proposal.tex](main_proposal.tex) atau [main_progres.tex](main_progres.tex):
 
 ```latex
-\showabstraktrue         % Tampilkan Abstrak Bahasa Indonesia
-\showabstracttrue        % Tampilkan Abstract Bahasa Inggris
-\showdaftarisitrue       % Tampilkan Daftar Isi
-\showdaftargambartrue    % Tampilkan Daftar Gambar
-\showdaftartabeltrue     % Tampilkan Daftar Tabel
+% \showabstraktrue         % Tampilkan Abstrak Bahasa Indonesia
+% \showabstracttrue        % Tampilkan Abstract Bahasa Inggris
+% \showkatapengantartrue   % Tampilkan Kata Pengantar
+% \showdaftarisitrue       % Tampilkan Daftar Isi
+% \showdaftargambartrue    % Tampilkan Daftar Gambar
+% \showdaftartabeltrue     % Tampilkan Daftar Tabel
 ```
 
 ### Paksa Konten Baru ke Halaman Ganjil
@@ -171,10 +268,10 @@ Untuk Proposal dan Progres (mode oneside), secara default setiap bab dan
 seksi front matter dimulai di halaman berikutnya saja (tidak dipaksa ke
 halaman ganjil). Untuk mengaktifkan perilaku ini (termasuk menyisipkan halaman
 kosong bertulisan *"Halaman ini sengaja dikosongkan"* jika diperlukan), tambahkan di
-`main_proposal.tex` atau `main_progres.tex`:
+[main_proposal.tex](main_proposal.tex) atau [main_progres.tex](main_progres.tex):
 
 ```latex
-\showforceoddpagetrue
+% \showforceoddpagetrue
 ```
 
 Buku PA tidak memerlukan ini karena mode `twoside` + `openright` sudah
@@ -222,26 +319,27 @@ halaman judul, pengesahan, dan pernyataan akan memperbarui diri secara otomatis.
 | `\TahunLulus`, `\BulanLulus` | Tahun dan bulan kelulusan |
 | `\Kota` | Kota (default: Surabaya) |
 
-### Toggle Front Matter (`main_proposal.tex` / `main_progres.tex`)
+### Toggle Front Matter ([main_proposal.tex](main_proposal.tex) / [main_progres.tex](main_progres.tex))
 
 Semua seksi prelim pada Proposal dan Progres default nonaktif. Aktifkan
-dengan uncomment baris berikut:
+dengan uncomment baris berikut di file terkait:
 
 ```latex
-\showabstraktrue         % Tampilkan Abstrak Bahasa Indonesia
-\showabstracttrue        % Tampilkan Abstract Bahasa Inggris
-\showdaftarisitrue       % Tampilkan Daftar Isi
-\showdaftargambartrue    % Tampilkan Daftar Gambar
-\showdaftartabeltrue     % Tampilkan Daftar Tabel
+% \showabstraktrue         % Tampilkan Abstrak Bahasa Indonesia
+% \showabstracttrue        % Tampilkan Abstract Bahasa Inggris
+% \showkatapengantartrue   % Tampilkan Kata Pengantar
+% \showdaftarisitrue       % Tampilkan Daftar Isi
+% \showdaftargambartrue    % Tampilkan Daftar Gambar
+% \showdaftartabeltrue     % Tampilkan Daftar Tabel
 ```
 
-### Paksa Halaman Ganjil (`main_proposal.tex` / `main_progres.tex`)
+### Paksa Halaman Ganjil ([main_proposal.tex](main_proposal.tex) / [main_progres.tex](main_progres.tex))
 
 Default nonaktif karena Proposal dan Progres dicetak 1 muka. Jika diperlukan
 (misalnya untuk dicetak bolak-balik secara mandiri), aktifkan dengan:
 
 ```latex
-\showforceoddpagetrue
+% \showforceoddpagetrue
 ```
 
 Setiap bab dan seksi front matter akan dimulai di halaman ganjil, dengan
@@ -282,6 +380,7 @@ Jangan mengubah atau menghapus isi `assets/pens/` karena berisi logo resmi.
 | Font                      | Times New Roman, 12pt                 |
 | Judul bab                 | 14pt, kapital, tebal                  |
 | Spasi                     | 1,5 spasi                             |
+| Indentasi paragraf        | 1,27 cm                               |
 | Margin jilid (kiri)       | 4 cm                                  |
 | Margin atas, bawah, luar  | 3 cm                                  |
 | Cetak                     | Bolak-balik (twoside), mirror margin  |
@@ -295,7 +394,8 @@ Jangan mengubah atau menghapus isi `assets/pens/` karena berisi logo resmi.
 | ------------------------- | ------------------------------------- |
 | Kertas                    | A4, 80 gram                           |
 | Font                      | Times New Roman, 12pt                 |
-| Spasi                     | 1,5 spasi                             |
+| Spasi                     | 1,15 spasi                            |
+| Indentasi paragraf        | 0,75 cm                               |
 | Margin kiri               | 3,0 cm                                |
 | Margin atas, bawah, kanan | 2,5 cm                                |
 | Cetak                     | 1 muka (oneside)                      |
