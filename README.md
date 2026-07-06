@@ -20,13 +20,52 @@ satu sumber konten yang sama: **Proposal PA**, **Progres PA**, dan **Buku PA**.
 
 Cara paling nyaman untuk menulis dokumen ini adalah menggunakan **VS Code** dengan
 extension [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop).
-Template ini sudah menyertakan konfigurasi siap pakai di `.vscode/settings.json`.
 
 ### Instalasi
 
 1. Install extension **LaTeX Workshop** (`James-Yu.latex-workshop`) di VS Code.
 2. Pastikan `latexmk`, `pdflatex`, dan `bibtex` tersedia di PATH
    (sudah terpenuhi jika TeX Live atau MiKTeX terinstall).
+
+### Mengapa perlu setup User Settings?
+
+Setting LaTeX Workshop (`latex.tools`, `latex.recipes`, `latex.outDir`) bersifat **window-scoped** —
+tidak bisa berbeda per-folder. File `.vscode/settings.json` di dalam project ini **tidak akan aktif**
+jika VS Code dibuka dari folder parent. Satu-satunya cara agar config ini berlaku di semua kondisi
+adalah menaruhnya di **User Settings** global (**satu kali saja**).
+
+### Setup (satu kali, berlaku permanen)
+
+1. Buka `Ctrl+Shift+P` → ketik **"Preferences: Open User Settings (JSON)"** → Enter.
+2. Tambahkan konfigurasi berikut:
+
+```json
+{
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk",
+      "command": "latexmk",
+      "args": [
+        "-pdf",
+        "-outdir=build",
+        "-auxdir=build",
+        "-interaction=nonstopmode",
+        "-synctex=1",
+        "%DOC%"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    { "name": "latexmk (build/)", "tools": ["latexmk"] }
+  ],
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latex.autoClean.run": "never",
+  "latex-workshop.synctex.afterBuild.enabled": true,
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.view.pdf.ref.viewer": "auto",
+  "latex-workshop.latex.outDir": "build"
+}
+```
 
 ### Kompilasi Pertama Kali
 
@@ -49,7 +88,7 @@ Setelah PDF pertama tersedia:
    | Forward search (editor → PDF) | `Ctrl+Alt+J` |
    | Backward search (PDF → editor) | `Ctrl+klik` di PDF |
 
-3. Setiap kali file `.tex` disimpan (`Ctrl+S`), LaTeX Workshop akan **otomatis meng-compile** dan **merefresh PDF** di tab preview.
+3. Setiap kali file `.tex` disimpan (`Ctrl+S`), LaTeX Workshop akan **otomatis meng-compile** dan **merefresh PDF** di tab preview. File intermediate masuk ke `build/`, bukan root folder.
 
 > **Penting**: Pastikan file yang aktif di editor adalah file `main_*.tex` (bukan
 > file chapter atau pages), karena LaTeX Workshop menentukan root file dari file
@@ -65,6 +104,8 @@ SyncTeX memungkinkan navigasi langsung antara kode sumber dan PDF:
 
 - **Editor → PDF**: Tekan `Ctrl+Alt+J` di editor untuk melompat ke posisi tersebut di PDF.
 - **PDF → Editor**: `Ctrl+klik` di PDF viewer untuk melompat ke baris kode sumber yang sesuai.
+
+
 
 ---
 

@@ -1,9 +1,16 @@
 {
-  // ── LaTeX Workshop: konfigurasi build & output ──────────────────
-  // Semua file sementara LaTeX diarahkan ke folder build/
-  // sesuai dengan .latexmkrc dan Makefile project ini.
+  // ── LaTeX Workshop: DOKUMENTASI SAJA ────────────────────────────
+  //
+  // File ini TIDAK akan aktif jika VS Code dibuka dari folder parent.
+  // Setting LaTeX Workshop bersifat window-scoped, bukan resource-scoped,
+  // sehingga tidak bisa berbeda per-folder dalam satu workspace.
+  //
+  // CARA YANG BENAR: Tambahkan config di bawah ke User Settings global.
+  // Buka: Ctrl+Shift+P → "Preferences: Open User Settings (JSON)"
+  //
+  // Lihat README.md section "Setup Editor" untuk instruksi lengkap.
+  // ─────────────────────────────────────────────────────────────────
 
-  // Gunakan latexmk dengan outdir eksplisit ke build/
   "latex-workshop.latex.tools": [
     {
       "name": "latexmk",
@@ -19,7 +26,6 @@
     }
   ],
 
-  // Recipe default: gunakan latexmk di atas
   "latex-workshop.latex.recipes": [
     {
       "name": "latexmk (build/)",
@@ -27,19 +33,10 @@
     }
   ],
 
-  // Auto-build setiap kali file .tex disimpan (realtime watch)
   "latex-workshop.latex.autoBuild.run": "onSave",
-
-  // Jangan auto-clean, biarkan Makefile yang mengurus
   "latex-workshop.latex.autoClean.run": "never",
-
-  // SyncTeX: aktifkan setelah build agar forward/inverse search bekerja
   "latex-workshop.synctex.afterBuild.enabled": true,
-
-  // PDF viewer: buka di tab VS Code, auto-refresh setelah build selesai
   "latex-workshop.view.pdf.viewer": "tab",
   "latex-workshop.view.pdf.ref.viewer": "auto",
-
-  // Output dir sesuai .latexmkrc
   "latex-workshop.latex.outDir": "build"
 }
