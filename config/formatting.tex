@@ -40,7 +40,7 @@
 \newsavebox{\KotakLabelJudul}
 \newdimen\LebarLabelJudul
 \newcommand{\SelaraskanIndentAsli}[1]{%
-  % \sbox{\KotakLabelJudul}{#1}%
+  \sbox{\KotakLabelJudul}{#1}%
   \global\LebarLabelJudul=\wd\KotakLabelJudul
   \global\advance\LebarLabelJudul by 1em
   \xdef\ParindentAsliTersimpan{\the\parindent}%
@@ -64,7 +64,7 @@
 {1em}
 {}
 [\SelaraskanIndentAsli{\thesubsection}]
-\titlespacing*{\subsection}{0pt}{3pt}{0pt}
+\titlespacing*{\subsection}{0pt}{12pt}{0pt}
 
 % ── Batas Penomoran dan Daftar Isi ───────────────────────────
 % 0 = Chapter, 1 = Section, 2 = Subsection, 3 = Subsubsection
@@ -78,7 +78,7 @@
 {1em}
 {}
 [\SelaraskanIndentAsli{\thesubsubsection}]
-\titlespacing*{\subsubsection}{0pt}{3pt}{0pt}
+\titlespacing*{\subsubsection}{0pt}{12pt}{0pt}
 
 % ── Caption Gambar ───────────────────────────────────────────
 \captionsetup[figure]{
