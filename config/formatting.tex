@@ -34,13 +34,13 @@
 {BAB \thechapter}
 {0pt}
 {}
-\titlespacing*{\chapter}{0pt}{0pt}{18pt}
+\titlespacing*{\chapter}{0pt}{-20pt}{18pt}
 
 % ── Auto-selaraskan indentasi paragraf pertama dengan huruf judul (bukan nomor) ──
 \newsavebox{\KotakLabelJudul}
 \newdimen\LebarLabelJudul
 \newcommand{\SelaraskanIndentAsli}[1]{%
-  \sbox{\KotakLabelJudul}{#1}%
+  % \sbox{\KotakLabelJudul}{#1}%
   \global\LebarLabelJudul=\wd\KotakLabelJudul
   \global\advance\LebarLabelJudul by 1em
   \xdef\ParindentAsliTersimpan{\the\parindent}%
@@ -55,7 +55,7 @@
 {1em}
 {}
 [\SelaraskanIndentAsli{\thesection}]
-\titlespacing*{\section}{0pt}{15pt}{3pt}
+\titlespacing*{\section}{0pt}{15pt}{0pt}
 
 % ── Format Judul Sub-subbab (Subsection) ─────────────────────
 \titleformat{\subsection}
@@ -64,7 +64,7 @@
 {1em}
 {}
 [\SelaraskanIndentAsli{\thesubsection}]
-\titlespacing*{\subsection}{0pt}{8pt}{3pt}
+\titlespacing*{\subsection}{0pt}{3pt}{0pt}
 
 % ── Batas Penomoran dan Daftar Isi ───────────────────────────
 % 0 = Chapter, 1 = Section, 2 = Subsection, 3 = Subsubsection
@@ -78,7 +78,7 @@
 {1em}
 {}
 [\SelaraskanIndentAsli{\thesubsubsection}]
-\titlespacing*{\subsubsection}{0pt}{3pt}{2pt}
+\titlespacing*{\subsubsection}{0pt}{3pt}{0pt}
 
 % ── Caption Gambar ───────────────────────────────────────────
 \captionsetup[figure]{
@@ -195,9 +195,9 @@
 \renewcommand{\cftlottitlefont}{\hfill\fontsize{14}{17}\bfseries\MakeUppercase}
 \renewcommand{\cftafterlottitle}{\hfill\null}
 
-\setlength{\cftbeforetoctitleskip}{0pt}
-\setlength{\cftbeforeloftitleskip}{0pt}
-\setlength{\cftbeforelottitleskip}{0pt}
+\setlength{\cftbeforetoctitleskip}{-20pt}
+\setlength{\cftbeforeloftitleskip}{-20pt}
+\setlength{\cftbeforelottitleskip}{-20pt}
 \setlength{\cftaftertoctitleskip}{12pt}
 \setlength{\cftafterloftitleskip}{12pt}
 \setlength{\cftafterlottitleskip}{12pt}
@@ -209,7 +209,7 @@
 \addtolength{\cfttabnumwidth}{2.5em}
 
 % ── Titik-titik di Daftar Isi ────────────────────────────────
-\renewcommand{\cftdotsep}{1.5} % Rapat (default 4.5)
+\renewcommand{\cftdotsep}{0.5}
 
 % ── Spasi Konsisten di Daftar Isi ────────────────────────────
 \setlength{\cftbeforechapskip}{0pt}
@@ -221,7 +221,7 @@
 % ── Font Level Bab: Bold ─────────────────────────────────────
 \renewcommand{\cftchapfont}{\bfseries}
 \renewcommand{\cftchappagefont}{\bfseries}
-\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}} % Titik untuk bab
+\renewcommand{\cftchapleader}{\bfseries\cftdotfill{\cftdotsep}}
 
 % ── Font Level Section: Normal ───────────────────────────────
 \renewcommand{\cftsecfont}{\normalfont}
@@ -229,7 +229,7 @@
 
 % ── Prefix "BAB" di Daftar Isi ───────────────────────────────
 \renewcommand{\cftchappresnum}{BAB }
-\addtolength{\cftchapnumwidth}{2.5em}
+\addtolength{\cftchapnumwidth}{2.3em}
 
 % ── Jarak (Spasi) Atas/Bawah Gambar dan Tabel ────────────────
 \setlength{\intextsep}{15pt}
@@ -271,14 +271,14 @@
 \newcommand{\cleartooddpage}{%
   \clearpage
   \ifodd\c@page\else
-    \hbox{}
-    \vspace*{\fill}
-    \begin{center}
-      \textit{Halaman ini sengaja dikosongkan}
-    \end{center}
-    \vspace{\fill}
-    \thispagestyle{fancy}
-    \newpage
+  \hbox{}
+  \vspace*{\fill}
+  \begin{center}
+    \textit{Halaman ini sengaja dikosongkan}
+  \end{center}
+  \vspace{\fill}
+  \thispagestyle{fancy}
+  \newpage
   \fi
 }
 \makeatother
