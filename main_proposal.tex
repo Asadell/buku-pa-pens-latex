@@ -43,7 +43,7 @@
 \showdaftarisitrue       % Tampilkan Daftar Isi
 \showdaftargambartrue    % Tampilkan Daftar Gambar
 \showdaftartabeltrue     % Tampilkan Daftar Tabel
-% \showforceoddpagetrue    % Paksa setiap konten baru ke halaman ganjil
+\showforceoddpagetrue    % Paksa setiap konten baru ke halaman ganjil
 
 \input{config/packages}
 \input{config/formatting}       % base layer: aturan shared
@@ -94,8 +94,8 @@
   \ifshowforceoddpage\cleartooddpage\else\clearpage\fi
   % Bungkus \tableofcontents agar tidak menambah entri dirinya sendiri ke TOC
   \begingroup
-    \renewcommand{\addcontentsline}[3]{}
-    \tableofcontents
+  \renewcommand{\addcontentsline}[3]{}
+  \tableofcontents
   \endgroup
 \fi
 
