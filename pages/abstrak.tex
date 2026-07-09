@@ -9,18 +9,7 @@
 \addcontentsline{toc}{chapter}{ABSTRAK}
 \thispagestyle{fancy}
 
-Abstrak adalah versi ringkas dari proyek akhir yang dituliskan dengan sistematis.
-Abstrak seharusnya memberikan gambaran ringkas dari konten-konten yang penting dari
-proyek akhir. Kata-kata yang ada pada abstrak seharusnya dipilih dengan cermat dan
-disusun dengan jelas untuk mendeskripsikan isi proyek akhir. Abstrak memuat pembahasan
-berikut: Latar belakang permasalahan (sekitar 1 kalimat), Permasalahan (1-2 kalimat),
-Solusi yang ditawarkan (sekitar 5 kalimat), dan Kinerja (sekitar 2 kalimat). Latar
-belakang permasalahan diambil dari \textit{problem domain} pada penelitian proyek akhir.
-Permasalahan menjelaskan tingkat urgensi dari \textit{problem} pada penelitian proyek
-akhir. Solusi mendiskusikan tujuan utama pada proyek akhir, klaim orisinalitas
-penelitian, skala penelitian, dan mendiskusikan metodologi penyelesaian masalah. Kinerja
-membahas ringkasan eksperimen, hasil ujicoba dan analisis kinerja. Abstrak ditulis dalam
-300-500 kata.
+Aplikasi FoodLAB yang digunakan untuk pemesanan makanan daring di Politeknik Elektronika Negeri Surabaya (PENS) menghadapi tantangan signifikan dalam hal observability dan pemulihan insiden pada sisi backend-nya. Observability merupakan kemampuan suatu sistem untuk memperlihatkan kondisi internalnya melalui data telemetri berupa metrics, log, dan traces, sehingga operator dapat memahami perilaku sistem secara menyeluruh. Sistem monitoring konvensional yang berbasis threshold statis dan respons manual terbukti tidak memadai untuk mendeteksi anomali secara akurat, sehingga menghasilkan false-positive rate yang tinggi serta memperpanjang Mean Time to Detect (MTTD) dan Mean Time to Recovery (MTTR). Untuk mengatasi permasalahan tersebut, penelitian ini merancang dan mengimplementasikan framework Agentic DevOps Monitoring Agents (ADMA). ADMA adalah sistem multi-agent otonom berbasis kecerdasan buatan yang mampu melakukan observability, root cause analysis, dan self-healing pada infrastruktur backend FoodLAB. Sistem ADMA terdiri dari dua komponen utama. Pertama, sebuah Go binary yang berjalan di server target dan bertugas melakukan monitoring secara real-time mencakup PostgreSQL, Docker container logs, dan resource utilization sistem. Komponen ini juga melakukan diagnosis berbasis Large Language Models (LLM) serta eksekusi remediasi otomatis. Kedua, sebuah backend control plane berbasis C\# ASP.NET Core yang berfungsi sebagai pusat manajemen, persistensi data, dan antarmuka REST API. Kedua komponen berkomunikasi secara asinkron melalui NATS messaging. Hasil implementasi ADMA pada infrastructure FoodLAB diharapkan dapat meningkatkan kemampuan deteksi anomali secara proaktif, mempercepat proses diagnosis dan pemulihan insiden, serta mengurangi ketergantungan pada intervensi manual dalam pengelolaan sistem.
 
 \vspace{1cm}
-\noindent\textbf{Kata Kunci:} kata1, kata2, kata3, kata4, kata5
+\noindent\textbf{Kata Kunci:} Agentic AI, Observability, Self-Healing, DevOps Monitoring, FoodLAB, LLM, NATS

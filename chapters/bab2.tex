@@ -3,64 +3,199 @@
 %============================================================
 \chapter{KAJIAN PUSTAKA}
 
-Awali pembahasan pada bab ini dengan mengutarakan \textit{Problem} pada
-\textit{Problem Domain} dari proyek akhir. Setelah itu, penjelasan tersebut diiringi
-dengan teori-teori penunjang pada bidang pengetahuan yang terkait dengan
-\textit{Problem Domain} dan \textit{Problem}. Untuk lebih menguatkan klaim orisinalitas
-proyek akhir, perlu diberikan ulasan tentang penelitian-penelitian terkait yang juga
-bertujuan menyelesaikan \textit{Problem} tersebut.
+Dalam upaya membangun sistem monitoring yang andal dan otonom untuk infrastruktur backend FoodLAB, diperlukan pendekatan yang tidak hanya fokus pada pengumpulan data telemetri, tetapi juga mencakup kemampuan analisis, reasoning, dan eksekusi tindakan korektif secara mandiri \cite{trabelsi2025systematic, trinity2023}. Observability sebagai kualitas infrastruktur memegang peran penting dalam menentukan keandalan dan ketersediaan layanan \cite{trinity2023}. Seperti dijelaskan pada bab sebelumnya, pendekatan monitoring konvensional berbasis threshold statis memiliki false-positive rate yang tinggi dan tidak mampu menangani kegagalan yang kompleks \cite{hrusto2025monitoring, voutsas2024mitigating}. Kemajuan dalam agentic AI dan LLM memberikan fondasi baru untuk membangun sistem yang mampu melakukan observability otonom, diagnosa root cause, dan self-healing secara proaktif \cite{xu2025large, dinh2025enhancing}. Dengan dukungan framework multi-agent dan teknologi messaging modern, sistem monitoring dapat bertransformasi dari paradigma reaktif menjadi proaktif dan otonom \cite{zou2022docker, fu2025leveraging}.
 
 \section{DESKRIPSI PERMASALAHAN}
 
-Deskripsikan dengan jelas dan detail dari permasalahan yang ingin diselesaikan pada
-proyek akhir. Permasalahan berisi penjelasan dari \textit{Problem} yang termuat pada
-judul kegiatan. Deskripsi masalah sebaiknya dituliskan dengan gaya bahasa deskriptif.
-Deskripsi masalah boleh memuat gambar, tabel, dan skema tertentu untuk mengilustrasikan
-permasalahan.
+Observability dan self-healing merupakan kemampuan kritis yang harus dimiliki oleh infrastruktur perangkat lunak modern agar mampu menjaga ketersediaan layanan secara berkelanjutan. Pada backend aplikasi FoodLAB, terdapat beberapa isu utama yang menghambat tercapainya tingkat observability dan ketahanan sistem yang memadai.
+
+\begin{enumerate}[label=\arabic*., leftmargin=*]
+  \item \textbf{Monitoring Berbasis Threshold Statis yang Tidak Kontekstual}\\
+  Sistem monitoring konvensional menggunakan threshold statis untuk mendeteksi anomali. Pendekatan ini tidak mampu mempertimbangkan konteks operasional yang bervariasi, seperti pola traffic harian, jadwal batch job, dan perubahan deployment \cite{voutsas2024mitigating}.
+
+  \item \textbf{Investigasi Root Cause yang Manual dan Fragmentaris}\\
+  Ketika terjadi anomali pada sistem, operator harus melakukan investigasi manual terhadap berbagai sumber data yang terpisah, meliputi log aplikasi, metrik database, resource utilization, dan container status. Proses investigasi fragmentaris ini rawan kesalahan dan memakan waktu lama, terutama pada kegagalan cascading yang melibatkan korelasi antar beberapa komponen sekaligus \cite{trinity2023}.
+
+  \item \textbf{Ketiadaan Mekanisme Remediasi Otonom}\\
+  Backend FoodLAB saat ini tidak memiliki kemampuan untuk secara otomatis melakukan tindakan korektif saat terjadi insiden. Setiap kegagalan, mulai dari container crash, memory leak, hingga slow query database, memerlukan intervensi manual. Mekanisme self-healing konvensional yang berbasis runbook hanya efektif untuk skenario yang telah diantisipasi dan tidak mampu bernalar untuk menangani pola kegagalan baru \cite{liang2023self}.
+
+  \item \textbf{Knowledge Gap Akibat Pergantian Tim Pengembang}\\
+  Karena FoodLAB dikembangkan secara estafet oleh beberapa generasi pengembang di lingkungan kampus, sering terjadi knowledge gap mengenai arsitektur dan infrastruktur sistem. Pengembang baru kesulitan memahami pola operasional normal, konfigurasi infrastruktur, dan prosedur penanganan insiden. Hal ini memperpanjang waktu pemulihan dan meningkatkan risiko kesalahan dalam penanganan insiden \cite{hrusto2025monitoring}.
+\end{enumerate}
+
+Keempat masalah ini berkontribusi langsung terhadap menurunnya ketersediaan layanan, meningkatnya downtime, serta terhambatnya pengembangan fitur baru. Untuk itu, diperlukan sistem monitoring cerdas yang mampu melakukan deteksi anomali secara proaktif, analisis root cause secara otomatis, dan eksekusi remediasi secara otonom menggunakan pendekatan agentic AI \cite{xu2025large}.
 
 \section{TEORI PENUNJANG}
 
-Uraikan dengan jelas dasar teori yang menunjang penelitian proyek akhir. Teori penunjang
-menguraikan dasar-dasar teori, temuan, dan bahan dari pustaka ilmiah lain yang dijadikan
-landasan untuk melakukan proyek akhir yang diusulkan. Uraian dalam Teori Penunjang
-menjadi landasan untuk menyusun kerangka atau konsep yang akan digunakan dalam proyek
-akhir. Jangan lupa untuk menyebutkan semua kutipan dengan rujukan yang jelas seperti
-ini \cite{buku_contoh}.
+Untuk membangun pemahaman yang menyeluruh terhadap solusi yang diusulkan, bagian ini menyajikan teori-teori penunjang yang menjadi landasan teknis dan konseptual dari framework ADMA. Teori-teori tersebut mencakup gambaran umum aplikasi FoodLAB sebagai konteks permasalahan, infrastruktur backend yang digunakan, konsep DevOps monitoring dan observability, mekanisme self-healing, paradigma agentic AI dan LLM-based agents, sistem messaging NATS, arsitektur multi-agent, serta teknologi implementasi yang digunakan dalam pengembangan sistem, meliputi Go, ASP.NET Core, React, Keycloak, PostgreSQL, dan Docker.
 
-\subsection{Sub-Teori Pertama}
+\subsection{FoodLAB}
 
-Uraikan sub-teori pertama di sini.
+FoodLAB merupakan nama baru dari aplikasi pemesanan makanan daring yang awalnya dikenal sebagai ``Masbro Canteen'' dan dikembangkan untuk memenuhi kebutuhan pemesanan makanan di lingkungan Politeknik Elektronika Negeri Surabaya (PENS). Aplikasi ini dirancang untuk memudahkan mahasiswa, dosen, serta seluruh civitas akademika dalam memesan makanan tanpa harus mengantri panjang di kantin kampus.
 
-\subsection{Sub-Teori Kedua}
+Aplikasi FoodLAB berfungsi sebagai solusi digital yang terintegrasi, di mana pengguna dapat melihat daftar menu terkini, memesan makanan, memilih opsi pengantaran atau pengambilan langsung di lokasi, serta melakukan pembayaran secara non-tunai. Fitur-fitur seperti riwayat transaksi, notifikasi pesanan via Firebase Cloud Messaging (FCM), dan tampilan antarmuka yang responsif dirancang untuk meningkatkan kepuasan pengguna.
 
-Uraikan sub-teori kedua di sini.
+Pengembangan FoodLAB merupakan hasil kerja sama dan estafet dari beberapa generasi pengembang mahasiswa di PENS. Proses pengembangan dilakukan dengan tetap mengedepankan prinsip clean code dan maintainability agar aplikasi tetap relevan dan mudah diperbarui di masa depan. Penelitian sebelumnya yang dilakukan oleh Yulanda et al. \cite{yulanda2025refactoring} menunjukkan bahwa basis kode FoodLAB mengandung berbagai code smells seperti metode yang terlalu panjang, duplikasi logika, dan feature envy (kelas yang lebih sering mengakses dan mengandalkan data milik kelas lain dibandingkan data miliknya sendiri) yang timbul akibat inkonsistensi praktik pengkodean antar generasi pengembang. Upaya refactoring terarah berbasis analisis statis menggunakan SonarQube berhasil memperbaiki struktur kode dan mengurangi technical debt secara terukur \cite{yulanda2025refactoring}. Seiring bertambahnya fitur dan kompleksitas sistem, termasuk integrasi dengan layanan eksternal, pengelolaan multi-tenant, dan payment gateway, tantangan dalam menjaga keandalan infrastruktur backend semakin besar. Kondisi ini menjadikan FoodLAB sebagai studi kasus yang ideal untuk penerapan sistem monitoring otonom berbasis agentic AI.
+
+Seiring perkembangan proyek, FoodLAB sedang menjalani proses rewrite arsitektur secara menyeluruh dari backend berbasis Laravel (PHP) ke ASP.NET Core dengan PostgreSQL sebagai database utama. Proses transisi ini menjadi salah satu motivasi utama penerapan sistem ADMA: tim pengembang yang baru mengambil alih proyek perlu memiliki visibilitas penuh terhadap kondisi infrastruktur yang akan segera berubah, dan kemampuan self-healing yang tidak bergantung pada pengetahuan mendalam tentang stack teknologi lama. ADMA dirancang untuk infrastruktur FoodLAB generasi berikutnya yang berbasis .NET dan PostgreSQL, meskipun arsitektur agent-nya bersifat generik dan dapat dikonfigurasi untuk berbagai jenis infrastruktur.
+
+\subsection{Backend dan Infrastruktur Aplikasi}
+
+Backend FoodLAB saat ini dibangun menggunakan framework Laravel versi 8 dengan MySQL 8.0 sebagai database aplikasi, dan berjalan di atas infrastruktur berbasis Docker container. Infrastruktur aktual mencakup container foodlab-app untuk aplikasi Laravel, foodlab-db yang menjalankan MySQL 8.0, foodlab-nginx sebagai reverse proxy, foodlab-redis untuk caching dan queue, serta foodlab-queue sebagai worker untuk pemrosesan tugas asinkron. FoodLAB juga mengintegrasikan beberapa layanan eksternal, yaitu Midtrans sebagai payment gateway, Firebase Cloud Messaging (FCM) untuk notifikasi push, dan Google OAuth untuk autentikasi berbasis akun Google. Namun demikian, FoodLAB sedang menjalani rewrite arsitektur ke ASP.NET Core dengan PostgreSQL, sehingga ADMA dirancang dan diimplementasikan untuk infrastruktur generasi berikutnya tersebut. Kemampuan pemantauan database melalui pg\_stat\_activity yang dimiliki ADMA langsung relevan untuk database PostgreSQL yang akan digunakan FoodLAB versi baru.
+
+Docker merupakan platform kontainerisasi yang memungkinkan pengembang mengemas aplikasi beserta seluruh dependensinya ke dalam unit portabel yang disebut container. Container memastikan bahwa aplikasi berjalan secara konsisten di lingkungan manapun (dari laptop pengembang hingga server produksi) karena seluruh dependensi sudah dikemas di dalamnya. Penggunaan Docker pada infrastruktur FoodLAB memberikan isolasi antar komponen, reproducibility lingkungan, dan kemudahan deployment serta pengelolaan \cite{zou2022docker}.
+
+Dalam konteks monitoring, infrastruktur berbasis Docker menghasilkan beberapa sumber telemetri yang perlu dipantau secara terkoordinasi. Container logs mencatat seluruh output aplikasi termasuk pesan error, stack trace, dan informasi debug yang dihasilkan oleh aplikasi yang berjalan di dalamnya (Laravel pada infrastruktur saat ini, atau ASP.NET Core pada infrastruktur generasi berikutnya). Metrik resource per container (CPU, memori, disk I/O, network I/O) dapat diakses melalui Docker Stats API. Sementara itu, database PostgreSQL mengekspos metrik internal melalui view pg\_stat\_activity yang mencatat query yang sedang berjalan, connection pool, dan statistik performa. Tantangan utama monitoring pada lingkungan Docker adalah kebutuhan untuk mengkorelasikan data dari beberapa sumber ini secara simultan untuk mendapatkan gambaran menyeluruh tentang kesehatan sistem \cite{trinity2023, hrusto2025monitoring, faseeha2025observability}.
+
+\subsection{DevOps Monitoring dan Observability}
+
+Tiga pilar observability, yaitu metrics, logs, dan traces, membentuk fondasi praktik monitoring modern \cite{trinity2023}. Metrics merupakan data numerik yang diukur secara periodik untuk menggambarkan kondisi sistem, seperti utilisasi CPU, konsumsi memori, dan latensi request. Logs adalah rekaman kejadian yang dihasilkan oleh komponen sistem dalam bentuk teks terstruktur maupun tidak terstruktur. Traces merepresentasikan jalur eksekusi sebuah request yang melintas melalui beberapa layanan secara berurutan \cite{trinity2023}.
+
+Untuk mengumpulkan dan memvisualisasikan ketiga pilar tersebut, sejumlah tools telah menjadi standar industri. Prometheus adalah sistem monitoring dan alerting berbasis time-series yang mengumpulkan metrik dari target yang dikonfigurasi melalui mekanisme scraping HTTP pada interval yang ditentukan. Prometheus menyimpan data secara lokal dan mendukung bahasa kueri PromQL untuk analisis metrik \cite{ekanayaka2023kubflow}. Loki adalah sistem agregasi log yang dikembangkan oleh Grafana Labs, dirancang untuk menyimpan dan mengindeks log secara efisien dengan hanya mengindeks label metadata (bukan konten log), sehingga konsumsi sumber dayanya jauh lebih rendah dibandingkan solusi berbasis full-text indexing seperti Elasticsearch \cite{ekanayaka2023kubflow}. Grafana adalah platform visualisasi open-source yang mendukung berbagai datasource termasuk Prometheus dan Loki, memungkinkan tim operasional membangun dashboard interaktif untuk memantau kondisi sistem secara real-time \cite{ekanayaka2023kubflow}. Alertmanager adalah komponen dari ekosistem Prometheus yang menangani manajemen alert, termasuk pengelompokan (grouping), deduplikasi, silencing, dan pengiriman notifikasi ke berbagai saluran seperti Telegram, Slack, atau email \cite{ekanayaka2023kubflow}.
+
+Meskipun tools ini secara fundamental beroperasi sebagai platform agregasi data pasif yang menempatkan beban interpretasi dan respons sepenuhnya pada operator manusia \cite{hrusto2025monitoring}, keberadaannya menjadi fondasi infrastruktur observability yang di atasnya sistem ADMA dibangun. ADMA mengonsumsi data telemetri dari infrastruktur monitoring yang sudah berjalan dan menambahkan lapisan kecerdasan berupa analisis otomatis dan remediasi otonom.
+
+Monitoring berbasis threshold statis, meskipun sederhana dalam konfigurasi, memiliki keterbatasan yang telah terdokumentasi dengan baik. Threshold statis $\tau$ pada metrik $m(t)$ yang men-trigger alert ketika $m(t) > \tau$ gagal saat operating range natural dari $m(t)$ bervariasi berdasarkan waktu, event deployment, atau pola traffic \cite{voutsas2024mitigating}. False-positive rate untuk threshold statis dapat mencapai 20-40\% di lingkungan produksi akibat kondisi metrik sistem terdistribusi yang baseline normalnya terus berubah dari waktu ke waktu \cite{voutsas2024mitigating}.
+
+Pendekatan AIOps (Artificial Intelligence for IT Operations) memperkenalkan penerapan teknik machine learning pada data operasional untuk deteksi anomali, korelasi event, dan analisis root cause \cite{trinity2023}. Penelitian signifikan telah dilakukan dalam deteksi anomali time-series menggunakan metode statistik dan deep learning, serta deteksi anomali berbasis log menggunakan teknik natural language processing \cite{liu2025multivariate}. Namun, solusi AIOps yang ada saat ini sebagian besar masih berfungsi sebagai mekanisme alerting yang lebih baik tanpa kemampuan remediasi otonom \cite{trinity2023}.
+
+\subsection{Self-Healing Systems}
+
+Self-healing systems merupakan paradigma di mana sistem mampu secara otomatis mendeteksi, mendiagnosis, dan memulihkan diri dari kegagalan tanpa intervensi manusia. Model referensi MAPE-K (Monitor, Analyze, Plan, Execute over a shared Knowledge base) menyediakan kerangka kerja dasar untuk perilaku autonomic yang mendefinisikan control loop sebagai fungsi komposisi dari Monitor, Analyze, Plan, dan Execute terhadap knowledge base \cite{fu2025leveraging}. Meskipun self-healing telah dieksplorasi dalam berbagai konteks termasuk autonomic computing dan self-adaptive systems, mekanisme yang ada saat ini masih terbatas pada strategi pemulihan yang telah ditentukan sebelumnya \cite{liang2023self}. Sistem-sistem tersebut tidak mampu bernalar tentang pola kegagalan baru atau menyusun rencana remediasi multi-langkah sebagai respons terhadap kegagalan cascading yang kompleks \cite{liang2023self}.
+
+Dalam konteks Docker, primitif self-healing yang tersedia meliputi restart policy dan health check. Namun, mekanisme ini terbatas pada level container individual dan tidak mampu menangani masalah pada level aplikasi seperti memory leak, slow query, atau konfigurasi yang salah. Diperlukan pendekatan yang lebih cerdas yang mampu memahami konteks aplikasi dan infrastruktur secara holistik \cite{xu2025large}. Framework ADMA yang diusulkan dalam penelitian ini menjawab keterbatasan ini dengan mengintegrasikan kemampuan LLM-based reasoning ke dalam control loop self-healing, sehingga sistem mampu bernalar secara generatif terhadap pola kegagalan yang belum pernah diantisipasi sebelumnya.
+
+\subsection{Agentic AI dan LLM-Based Agents}
+
+Kemunculan agentic AI, yaitu sistem di mana Large Language Models (LLM) diperlengkapi dengan kemampuan tool-use, memory, planning, dan eksekusi otonom, merepresentasikan kemajuan signifikan dalam desain sistem AI \cite{xu2025large}. Framework seperti LangChain dan LangGraph telah mendemonstrasikan viabilitas arsitektur multi-agent untuk dekomposisi dan eksekusi tugas yang kompleks \cite{brodimas2025intent}. Penelitian terkini mulai mengeksplorasi penerapan LLM-based agents pada tugas software engineering termasuk code generation, debugging, dan testing \cite{jiang2025survey}.
+
+Dalam framework ADMA yang diusulkan, LLM berperan sebagai reasoning core yang menerima data telemetri dari Perception Agents, melakukan analisis root cause menggunakan chain-of-thought reasoning, dan menghasilkan rencana remediasi yang dapat dieksekusi oleh Action Executor. Pendekatan ini memungkinkan sistem menangani pola kegagalan yang belum pernah ditemui sebelumnya karena kemampuan generalisasi LLM \cite{xu2025large}.
+
+\subsection{NATS Messaging System}
+
+NATS adalah sistem messaging berkinerja tinggi yang dirancang untuk komunikasi cloud-native \cite{fernando2021designing}. NATS menyediakan beberapa model komunikasi, termasuk publish-subscribe, request-reply, dan queue groups yang memungkinkan komunikasi asinkron dan decoupled antara komponen sistem.
+
+Dalam arsitektur ADMA, NATS digunakan sebagai transport layer untuk komunikasi antara Go binary (agent yang berjalan di server target) dan C\# backend (control plane). Pemilihan NATS didasarkan pada beberapa keunggulan: latensi rendah (sub-millisecond), footprint yang ringan, dukungan untuk at-most-once dan at-least-once delivery, serta kemampuan auto-reconnect yang penting untuk lingkungan yang tidak stabil \cite{fernando2021designing}.
+
+\subsection{Arsitektur Multi-Agent (Perception-Reasoning-Action)}
+
+Framework ADMA mengadopsi arsitektur multi-agent berlapis yang terinspirasi dari model MAPE-K dan diperluas dengan kemampuan LLM-based reasoning \cite{zou2022docker, fu2025leveraging}. Arsitektur ini terdiri dari tiga lapisan utama yang bekerja secara terkoordinasi.
+
+\begin{enumerate}[label=\arabic*., leftmargin=*]
+  \item \textbf{Perception Layer}\\
+  Lapisan ini bertanggung jawab untuk mengambil, menormalisasi, dan memperkaya data telemetri dari sumber-sumber heterogen. Tiga tipe Perception Agent utama didefinisikan, yaitu: Metric Perception Agent (MPA) yang mengkonsumsi data metrik time-series dari PostgreSQL; Log Perception Agent (LPA) yang mengumpulkan dan memproses log terstruktur dan tidak terstruktur dari Docker container sambil melakukan analisis semantik secara real-time; serta System Resource Agent (SRA) yang memantau utilisasi resource sistem seperti CPU, memori, disk, dan jaringan pada server target.
+
+  \item \textbf{Reasoning Layer}\\
+  Lapisan ini melakukan analisis anomali, root cause analysis, impact assessment, dan perencanaan remediasi menggunakan LLM-based reasoning yang dikombinasikan dengan domain-specific knowledge. Reasoning Engine menerima sinyal dari seluruh Perception Agent, mengkorelasikan data multi-sinyal, dan menghasilkan diagnosis beserta rencana aksi \cite{fu2025leveraging}.
+
+  \item \textbf{Action Layer}\\
+  Lapisan ini menerjemahkan rencana remediasi menjadi operasi yang dapat dieksekusi. Action Executor mampu melakukan berbagai tindakan korektif, termasuk restart container Docker, eksekusi perintah sistem, perbaikan konfigurasi, dan pembuatan merge request di GitLab untuk perbaikan kode sumber \cite{brodimas2025intent}.
+\end{enumerate}
+
+Secara formal, sistem ADMA didefinisikan sebagai komposisi tiga fungsi lapisan berikut:
+\begin{equation}
+  \text{ADMA}(s(t)) = L_{\text{action}}(L_{\text{reason}}(L_{\text{perceive}}(s(t))))
+\end{equation}
+di mana $s(t) \in S$ adalah system state pada waktu $t$, serta $L_{\text{perceive}}: S \to O$, $L_{\text{reason}}: O \to P$, dan $L_{\text{action}}: P \to A$ memetakan dari system state ke observations, observations ke plans, dan plans ke actions, sejalan dengan pendekatan dekomposisi tugas berbasis multi-agent yang ditunjukkan efektif untuk root cause analysis \cite{fu2025leveraging}.
+
+\subsection{Go Programming Language}
+
+Go (atau Golang) adalah bahasa pemrograman sistem yang dikembangkan oleh Google, pertama kali dirilis pada tahun 2009 \cite{tsoukalas2023microservices}. Go dirancang untuk memiliki sintaksis yang sederhana, kompilasi yang cepat, dan efisiensi eksekusi yang tinggi setara dengan bahasa C/C++, namun dengan model konkurensi yang lebih modern. Keunggulan utama Go terletak pada goroutine, yaitu unit eksekusi konkuren yang sangat ringan sehingga sebuah program Go dapat menjalankan ribuan goroutine secara bersamaan dengan footprint memori yang minimal, berbeda dengan thread OS konvensional yang membutuhkan alokasi memori yang jauh lebih besar.
+
+Go menghasilkan binary yang dapat dieksekusi secara mandiri (standalone binary) tanpa memerlukan runtime environment atau virtual machine terpisah, menjadikannya ideal untuk deployment sebagai single executable file \cite{tsoukalas2023microservices}. Fitur ini sangat relevan untuk ADMA Go binary, di mana agent didesain agar dapat didistribusikan ke server target sebagai satu file yang ringan tanpa instalasi dependensi tambahan. Selain itu, Go memiliki package standar yang kaya, termasuk paket untuk networking, HTTP, JSON, dan system calls, yang mendukung pengembangan perangkat lunak sistem yang komprehensif.
+
+\subsection{ASP.NET Core}
+
+ASP.NET Core adalah framework pengembangan aplikasi web lintas platform yang dikembangkan oleh Microsoft, dibangun di atas .NET runtime yang bersifat open-source dan mendukung deployment pada Linux, macOS, maupun Windows \cite{valiveti2025evolution}. ASP.NET Core versi 9.0, yang digunakan dalam ADMA control plane, menghadirkan peningkatan performa signifikan dibandingkan versi sebelumnya, dengan dukungan penuh untuk pemrograman asinkron berbasis async/await dan dependency injection yang terintegrasi dalam framework.
+
+Clean Architecture, yang diimplementasikan dalam backend ADMA, merupakan pola arsitektur perangkat lunak yang memisahkan concern aplikasi ke dalam lapisan-lapisan yang terdefinisi dengan jelas: Domain (entity dan logika bisnis inti), Application (use cases dan services), Infrastructure (akses database, messaging, integrasi eksternal), dan API (controllers dan endpoint HTTP). Pemisahan ini memastikan bahwa business logic tidak bergantung pada detail implementasi seperti database engine atau messaging system yang digunakan \cite{valiveti2025evolution}. Entity Framework Core (ORM resmi dari Microsoft) digunakan untuk mengabstraksi akses database PostgreSQL, sehingga query database ditulis menggunakan LINQ yang lebih ekspresif dan type-safe dibandingkan raw SQL.
+
+Dalam konteks ADMA, ASP.NET Core dipilih sebagai platform control plane karena kemampuannya menangani background service (\texttt{AdmaNatsService} sebagai subscriber NATS) dan REST API secara bersamaan dalam satu proses, didukung oleh SignalR untuk komunikasi real-time ke frontend dashboard, serta integrasi yang baik dengan library enterprise seperti NATS.Net untuk messaging dan Serilog untuk structured logging.
+
+\subsection{React dan Vite}
+
+React adalah library JavaScript open-source yang dikembangkan oleh Meta untuk membangun antarmuka pengguna berbasis komponen yang reaktif. React mengadopsi paradigma deklaratif di mana developer mendefinisikan tampilan berdasarkan state, dan React secara otomatis memperbarui DOM saat state berubah. Penelitian oleh Barros et al. \cite{barros2023examining} menunjukkan bahwa penerapan design patterns pada React menghasilkan implikasi performa yang signifikan, menegaskan relevansi pemilihan arsitektur komponen yang tepat dalam pengembangan antarmuka modern.
+
+Vite adalah build tool dan development server generasi berikutnya yang memanfaatkan ES modules native browser untuk memberikan pengalaman development yang lebih cepat. Dengan menggunakan SWC sebagai transpiler, Vite mampu meningkatkan kecepatan kompilasi secara signifikan dibandingkan bundler konvensional.
+
+Dalam implementasi ADMA dashboard, React 18 dikombinasikan dengan TanStack Query untuk manajemen state server-side dan caching data API, serta \texttt{@microsoft/signalr} untuk koneksi real-time ke backend via SignalR WebSocket. shadcn/ui digunakan sebagai component library berbasis Radix UI yang menyediakan komponen aksesibel dan dapat dikustomisasi, sementara Tailwind CSS menangani styling utilitas. Kombinasi teknologi ini memungkinkan dashboard memperbarui status agent, incident, dan container secara real-time tanpa polling manual.
+
+SignalR adalah library real-time web functionality dari Microsoft yang memungkinkan server mengirimkan data ke klien secara push tanpa klien perlu melakukan polling secara periodik. SignalR menggunakan WebSocket sebagai transportasi utama, dengan fallback otomatis ke Server-Sent Events atau Long Polling apabila WebSocket tidak tersedia. Dalam implementasi dashboard ADMA, SignalR digunakan untuk memperbarui status agent, incident, dan container secara real-time di browser operator tanpa me-refresh halaman, sehingga operator selalu mendapatkan gambaran kondisi sistem terkini.
+
+Untuk menyajikan data observability yang kompleks secara visual dan intuitif, dashboard juga mengintegrasikan Recharts untuk visualisasi metrik dalam bentuk grafik area (tren anomali per waktu) dan grafik lingkaran (distribusi severity incident), Framer Motion untuk animasi transisi komponen yang memberikan umpan balik visual segera saat status berubah, serta react-markdown untuk merender hasil penalaran LLM menjadi format teks terstruktur dengan pemformatan yang mudah dibaca.
+
+\subsection{Keycloak}
+
+Keycloak adalah solusi Identity and Access Management (IAM) open-source yang dikembangkan oleh Red Hat, menyediakan fitur Single Sign-On (SSO), autentikasi multi-faktor, dan manajemen identitas terpusat \cite{thorgersen2023keycloak}. Keycloak mengimplementasikan standar industri OpenID Connect (OIDC) dan OAuth 2.0, memungkinkan aplikasi untuk mendelegasikan proses autentikasi kepada Keycloak tanpa perlu menyimpan credential pengguna secara langsung.
+
+Dalam arsitektur ADMA, Keycloak diintegrasikan sebagai SSO provider untuk dashboard frontend. Frontend mendapatkan JWT (JSON Web Token) dari Keycloak setelah pengguna berhasil login, kemudian token tersebut dikirim sebagai Bearer token pada setiap request HTTP ke backend ASP.NET Core. Backend memvalidasi token JWT menggunakan library \texttt{Microsoft.AspNetCore.Authentication.JwtBearer} secara stateless, tanpa perlu menghubungi Keycloak pada setiap request \cite{thorgersen2023keycloak}. Pendekatan ini memastikan bahwa credential pengguna tidak pernah diproses langsung oleh ADMA backend; seluruh siklus autentikasi dikelola oleh Keycloak sebagai trusted identity provider.
+
+\subsection{PostgreSQL dan Pemantauan Database}
+
+ADMA dirancang untuk memantau infrastruktur FoodLAB yang sedang dalam proses migrasi ke PostgreSQL. Fitur pemantauan melalui \texttt{pg\_stat\_activity} yang dibahas pada subbab ini relevan langsung untuk database PostgreSQL yang akan digunakan oleh FoodLAB versi baru berbasis ASP.NET Core. PostgreSQL juga digunakan oleh ADMA Control Plane (C\# backend) sebagai database internal untuk menyimpan data monitoring, incident, dan audit log, sehingga penggunaan PostgreSQL bersifat ganda dalam ekosistem ADMA sebagai target yang dimonitor sekaligus sebagai penyimpanan data sistem monitoring itu sendiri.
+
+PostgreSQL adalah sistem manajemen basis data relasional (RDBMS) open-source yang dikenal karena keandalan, kekayaan fitur, dan kepatuhannya terhadap standar SQL. Salunke dan Ouda \cite{salunke2024performance} membuktikan keunggulan performa PostgreSQL dalam operasi seleksi data dibandingkan basis data relasional lainnya, dengan waktu eksekusi query yang secara konsisten lebih rendah pada beban kerja read-heavy. PostgreSQL menyediakan berbagai mekanisme internal untuk memantau kondisi operasionalnya melalui sekumpulan view sistem yang disebut \texttt{pg\_stat\_views}. Di antara view tersebut, \texttt{pg\_stat\_activity} menjadi yang paling relevan untuk pemantauan performa real-time, karena mencatat setiap koneksi aktif beserta query yang sedang dieksekusi, durasi eksekusi, status koneksi, dan PID (Process ID) dari proses backend yang menangani koneksi tersebut.
+
+Dalam konteks sistem ADMA, pemantauan PostgreSQL melalui \texttt{pg\_stat\_activity} memungkinkan Metric Perception Agent (MPA) untuk mendeteksi kondisi abnormal seperti slow query (query yang berjalan melebihi ambang waktu yang ditentukan), long-running transaction (transaksi yang terbuka terlalu lama dan berisiko menyebabkan bloat, yaitu penumpukan baris data usang yang membuat ukuran tabel database membesar dan kinerja query menjadi lambat), connection pool exhaustion (jumlah koneksi aktif mendekati batas maksimum server), dan lock contention (situasi di mana beberapa query saling menunggu pelepasan kunci yang dipegang oleh query lain). Deteksi dini terhadap kondisi-kondisi ini memungkinkan sistem melakukan remediasi sebelum berdampak pada ketersediaan layanan FoodLAB.
+
+\subsection{Docker dan Container Orchestration}
+
+Docker adalah platform kontainerisasi yang memungkinkan pengembang mengemas aplikasi beserta seluruh dependensinya ke dalam unit portabel yang disebut container \cite{zou2022docker}. Setiap container berjalan dalam isolasi dari container lain dan dari sistem operasi host, namun berbagi kernel yang sama sehingga lebih ringan dibandingkan mesin virtual penuh \cite{zou2022docker}. Docker menyediakan Docker Engine API, yaitu antarmuka RESTful yang memungkinkan program eksternal berinteraksi secara programatik dengan daemon Docker untuk mengelola container, mengambil log, memantau statistik resource secara berkelanjutan.
+
+Blue-green deployment adalah strategi deployment yang mempertahankan dua lingkungan produksi identik secara bersamaan, yang disebut blue (versi aktif saat ini) dan green (versi baru yang akan dirilis). Ketika deployment baru siap, lalu lintas dialihkan dari blue ke green secara instan, sehingga jika terjadi masalah, sistem dapat langsung dikembalikan ke versi blue tanpa downtime yang berarti \cite{ekanayaka2023kubflow}. Dalam infrastruktur backend FoodLAB, strategi ini diterapkan untuk memastikan pembaruan aplikasi dapat dilakukan tanpa mempengaruhi ketersediaan layanan bagi pengguna.
 
 \section{PENELITIAN TERKAIT}
 
-Penelitian terkait memuat hasil penelitian pihak lain yang mempunyai \textit{Problem}
-yang sama dengan penelitian kita, tetapi dengan menggunakan \textit{Uniqueness} yang
-berbeda. Ceritakan bagaimana penelitian-penelitian terkait telah mencoba menyelesaikan
-permasalahan yang sama, dengan cara mereka masing-masing, yang ditunjukkan dengan
-kutipan terhadap pustaka. Penelitian terkait yang baik melibatkan kajian pustaka yang
-relevan dan terpercaya dari jurnal ilmiah internasional ataupun nasional, presentasi
-ilmiah internasional ataupun nasional, dan buku atau catatan rujukan ilmiah. Penulis
-harus mencantumkan sumber referensi pada daftar pustaka manakala melakukan rujukan dan
-kutipan dari pihak lain secara jujur dan benar seperti ini \cite{jurnal_contoh}.
-Pencantuman sumber referensi perlu dilakukan baik terhadap kutipan langsung ataupun
-kutipan tidak langsung (parafrase).
+Penelitian terkait memuat hasil penelitian pihak lain yang mempunyai \textit{Problem} yang sama dengan penelitian kita, tetapi dengan menggunakan \textit{Uniqueness} yang berbeda. Ceritakan bagaimana penelitian-penelitian terkait telah mencoba menyelesaikan permasalahan yang sama, dengan cara mereka masing-masing, yang ditunjukkan dengan kutipan terhadap pustaka. Penelitian terkait yang baik melibatkan kajian pustaka yang relevan dan terpercaya dari jurnal ilmiah internasional ataupun nasional, presentasi ilmiah internasional ataupun nasional, dan buku atau catatan rujukan ilmiah.
 
-Untuk kutipan langsung dan pendek (1--2 baris), cara penulisan rujukan dilakukan dengan
-memberikan tanda petik ganda di awal dan akhir kutipan, ditulis miring, kemudian diiringi
-sumber referensi, seperti ini \textit{``Ini contoh penulisan rujukan untuk kutipan
-langsung dan pendek''}\cite{buku_contoh,jurnal_contoh}. Sedangkan untuk kutipan langsung
-dan panjang (lebih dari 2 baris), penulis dapat menuliskannya seperti di bawah ini.
+\subsection{Observability dan Deteksi Anomali pada Sistem Terdistribusi}
 
-\begin{kutipanpanjang}
-  ``Ini contoh penulisan rujukan untuk kutipan langsung dan panjang, ditulis pada
-  paragraf terpisah dengan memberikan tanda petik ganda di awal dan akhir kutipan,
-  ukuran font 10 point dan margin kanan kiri yang masuk 10 mm dari batas penulisan,
-  kemudian diiringi dengan sumber referensi pada daftar pustaka.'' \cite{buku_contoh}
-\end{kutipanpanjang}
+Deteksi anomali pada sistem terdistribusi berbasis microservice dan container telah menjadi bidang riset yang aktif seiring meningkatnya adopsi arsitektur tersebut di lingkungan produksi. Pendekatan awal dalam bidang ini berfokus pada satu jenis sinyal telemetri. Raeiszadeh et al. \cite{raeiszadeh2023real} menunjukkan bahwa distributed tracing dapat dimanfaatkan untuk deteksi anomali real-time pada aplikasi microservice berbasis cloud dengan latensi rendah. Sementara itu, Raeiszadeh et al. \cite{raeiszadeh2025asynchronous} mengeksplorasi pendekatan federated learning asinkron untuk deteksi anomali pada lingkungan microservice cloud, menunjukkan bahwa analisis terdistribusi dapat meningkatkan akurasi tanpa sentralisasi data, meskipun pendekatan ini pun tidak menyentuh aspek remediasi otonom. Di sisi lain, He et al. \cite{he2024llmelog} serta Zhang et al. \cite{zhang2024large} mengeksplorasi penggunaan LLM secara spesifik untuk analisis log dalam konteks AIOps, menunjukkan bahwa model bahasa mampu mendeteksi pola anomali pada log yang tidak terstruktur dengan akurasi lebih baik dibandingkan pendekatan berbasis keyword konvensional.
 
-Untuk kutipan tidak langsung (parafrase), penulis dapat menuliskan sumber referensi
-setelah kalimat parafrase selesai, seperti ini \cite{online_contoh}.
+Namun demikian, pendekatan berbasis satu sinyal memiliki keterbatasan inheren karena sebuah insiden pada sistem terdistribusi hampir selalu termanifestasi secara bersamaan pada beberapa jenis telemetri. Penelitian TrinityRCL \cite{trinity2023} mengatasi keterbatasan ini dengan mengusulkan pendekatan multi-granular yang mengintegrasikan metrik, log, dan traces secara bersamaan untuk melokalisasi root cause hingga ke level kode sumber. Studi pemetaan sistematis oleh Hrusto et al. \cite{hrusto2025monitoring} mempertegas temuan ini dengan menyimpulkan bahwa integrasi multi-sinyal secara konsisten menghasilkan akurasi deteksi yang lebih tinggi dibandingkan pendekatan single-signal, dan bahwa deep learning menunjukkan performa superior untuk deteksi anomali pada sistem cloud dibandingkan metode statistik tradisional. Dalam konteks container khususnya, Zou et al. \cite{zou2022docker} mengusulkan sistem pemantauan anomali berbasis Isolation Forest yang dioptimasi untuk lingkungan Docker, menunjukkan bahwa teknik unsupervised learning dapat efektif mendeteksi anomali resource pada container secara real-time.
+
+Meskipun penelitian-penelitian di atas menunjukkan kemajuan signifikan, seluruhnya berhenti pada tahap deteksi dan diagnosis. Belum ada yang mengintegrasikan kemampuan deteksi multi-sinyal dengan mekanisme remediasi otonom dalam satu sistem yang terpadu. Celah inilah yang menjadi dasar perancangan Perception Layer dalam ADMA, yang mengkoordinasikan tiga Perception Agent (MPA, LPA, SRA) untuk mengumpulkan sinyal dari PostgreSQL, Docker container logs, dan resource sistem secara konkuren, sebelum meneruskannya ke lapisan reasoning untuk analisis dan perencanaan remediasi.
+
+\subsection{Self-Healing dan Remediasi Otonom pada Infrastruktur}
+
+Self-healing sebagai kapabilitas infrastruktur telah dimodelkan secara formal melalui kerangka MAPE-K (Monitor, Analyze, Plan, Execute over a shared Knowledge base), yang mendefinisikan autonomic control loop sebagai siklus berulang dari pemantauan, analisis, perencanaan, dan eksekusi \cite{fu2025leveraging}. Konsep ini menjadi landasan bagi penelitian-penelitian selanjutnya yang berupaya mengimplementasikan perilaku self-healing pada sistem produksi nyata.
+
+Liang dan Yin \cite{liang2023self} melakukan tinjauan komprehensif terhadap kerangka-kerangka self-healing control yang ada dan menyimpulkan bahwa meskipun model MAPE-K telah dieksplorasi secara luas, implementasinya masih terbatas pada strategi pemulihan yang telah ditentukan sebelumnya (predefined recovery strategies). Sistem-sistem ini tidak mampu bernalar tentang pola kegagalan baru atau menyusun rencana remediasi multi-langkah sebagai respons terhadap kegagalan cascading yang kompleks. Temuan ini didukung oleh penelitian Dodda et al. \cite{dodda2024enhancing} yang secara khusus mengevaluasi keterbatasan mekanisme self-healing berbasis machine learning pada lingkungan microservice cloud, menyimpulkan bahwa model yang dilatih pada skenario kegagalan historis mengalami penurunan akurasi yang signifikan ketika menghadapi pola kegagalan baru yang belum pernah ada dalam data latih.
+
+Di sisi lain, Fu et al. \cite{fu2025leveraging} menunjukkan bahwa penerapan framework multi-agent untuk analisis root cause mampu menangani skenario kegagalan yang lebih kompleks dibandingkan sistem berbasis agen tunggal, karena memungkinkan dekomposisi masalah dan paralelisasi investigasi. Kapoor dan Kas \cite{kapoor2026breaking} mengusulkan pendekatan yang lebih inovatif dengan memanfaatkan LLM sebagai agent aktif dalam proses monitoring dan resolusi anomali, menunjukkan bahwa LLM mampu menghasilkan rencana remediasi yang kontekstual bahkan untuk skenario yang tidak pernah ditemui sebelumnya. Penelitian ini menegaskan bahwa kemampuan generalisasi LLM merupakan kunci untuk mengatasi keterbatasan fundamental dari self-healing berbasis predefined rules.
+
+Penelitian-penelitian di atas secara bersama-sama menunjukkan bahwa evolusi self-healing mengarah pada pendekatan berbasis AI yang mampu bernalar secara generatif. Namun, validasi di lingkungan produksi nyata, khususnya pada infrastruktur Docker di luar Kubernetes, masih sangat terbatas. ADMA mengisi celah ini dengan mengimplementasikan Action Layer berbasis LLM yang mampu mengklasifikasikan risiko aksi remediasi secara otonom dan mengeksekusinya pada infrastruktur Docker backend FoodLAB tanpa bergantung pada runbook yang telah didefinisikan sebelumnya.
+
+\subsection{Penerapan Agentic AI dan LLM untuk Tugas DevOps dan Rekayasa Perangkat Lunak}
+
+Kemunculan agentic AI, yaitu sistem di mana LLM dilengkapi dengan kemampuan tool-use, memori, perencanaan, dan eksekusi otonom, telah membuka dimensi baru dalam otomasi tugas-tugas operasional dan rekayasa perangkat lunak. Xu et al. \cite{xu2025large} melakukan tinjauan sistematis terhadap penggunaan LLM untuk tugas-tugas cyber security dan menyimpulkan bahwa kemampuan reasoning LLM secara signifikan melampaui pendekatan berbasis rule untuk analisis ancaman yang kompleks dan tidak terstruktur. Dalam konteks rekayasa perangkat lunak, penelitian-penelitian mutakhir mulai mengeksplorasi LLM untuk code generation, debugging, dan bahkan automated refactoring \cite{jiang2025survey}.
+
+Untuk aplikasi DevOps secara spesifik, Brodimas et al. \cite{brodimas2025intent} mendemonstrasikan penggunaan agentic AI untuk orkestrasi infrastruktur berbasis intent, di mana operator cukup menyatakan kondisi yang diinginkan dalam bahasa natural dan agen secara otonom menentukan urutan aksi yang diperlukan. Pendekatan ini sangat relevan dengan arsitektur Reasoning Layer dalam ADMA, di mana LLM menerima sinyal anomali dan diminta bernalar tentang root cause serta menghasilkan rencana remediasi terstruktur. Dinh et al. \cite{dinh2025enhancing} lebih jauh menunjukkan bahwa integrasi kecerdasan adaptif berbasis AI ke dalam alur DevSecOps mampu meningkatkan kemampuan deteksi kerentanan secara signifikan, menegaskan relevansi paradigma agentic AI untuk konteks keamanan dan keandalan operasional.
+
+Penelitian yang secara khusus menggabungkan multi-agent reasoning dengan root cause analysis dilakukan by Fu et al. \cite{fu2025leveraging}, yang menunjukkan bahwa dekomposisi tugas RCA ke dalam beberapa agen spesialis menghasilkan diagnosis yang lebih akurat dan lengkap dibandingkan pendekatan single-agent. Temuan ini secara langsung menginformasikan desain arsitektur ADMA yang memisahkan Perception Layer, Reasoning Layer, dan Action Layer sebagai agen-agen dengan domain tanggung jawab yang berbeda namun bekerja secara terkoordinasi.
+
+Secara keseluruhan, penelitian-penelitian di atas menunjukkan bahwa agentic AI berbasis LLM telah terbukti efektif untuk tugas-tugas reasoning dan otomasi yang kompleks. Namun, implementasi konkret yang mengintegrasikan kemampuan ini ke dalam sistem DevOps monitoring dengan self-healing end-to-end, mulai dari deteksi anomali multi-sinyal, root cause analysis berbasis LLM, hingga eksekusi remediasi otonom termasuk pembuatan merge request untuk perbaikan kode, pada infrastruktur Docker backend di lingkungan kampus masih belum ada. Inilah kontribusi utama penelitian ini.
+
+Untuk memberikan gambaran komprehensif mengenai posisi dan kontribusi penelitian ini terhadap studi-studi sebelumnya, Tabel \ref{tab:perbandingan_penelitian} menyajikan perbandingan penelitian terkait berdasarkan fokus penelitian, metodologi, dan hasil yang diperoleh.
+
+\begin{table}[H]
+  \caption{Perbandingan Penelitian Terkait}
+  \label{tab:perbandingan_penelitian}
+  \centering
+  \begin{tblr}{
+    colspec = {X[2,l] X[3,l] X[3,l] X[4,l]},
+    hlines, vlines,
+    row{1} = {font=\bfseries},
+    valign = m
+  }
+    Judul Penelitian & Fokus Penelitian & Metodologi & Hasil Penelitian \\
+    TrinityRCL \cite{trinity2023} & Lokalisasi root cause multi-granular hingga level kode menggunakan multiple jenis data telemetri. & Integrasi metrik, log, dan traces untuk root cause analysis dengan granularitas hingga level kode. & Mampu melokalisasi root cause hingga level kode spesifik pada sistem microservice. \\
+    Monitoring Data for Anomaly Detection in Cloud-Based Systems \cite{hrusto2025monitoring} & Pemetaan sistematis pendekatan monitoring untuk deteksi anomali pada sistem cloud. & Systematic mapping study terhadap berbagai metode deteksi anomali. & Deep learning menunjukkan performa superior; integrasi multi-sinyal meningkatkan akurasi deteksi. \\
+    Refactoring for Sustainable Maintainability: A Case Study on a Campus Canteen Application \cite{yulanda2025refactoring} & Peningkatan maintainability kode FoodLAB menggunakan analisis statis dan refactoring terarah. & SonarQube-guided refactoring dengan validasi eksploratori. & Pengurangan signifikan code smells dan duplikasi; peningkatan modularitas dan keterbacaan kode FoodLAB. \\
+    Implementasi Agentic DevOps Monitoring Agents Berbasis LLM untuk Meningkatkan Observability dan Self-Healing Backend FoodLAB (Penelitian yang Diusulkan) & Penerapan framework monitoring otonom berbasis agentic AI pada infrastruktur Docker backend FoodLAB. & Implementasi multi-agent (Go binary + C\# backend) dengan LLM reasoning, komunikasi via NATS, diterapkan pada kasus FoodLAB. & Diharapkan meningkatkan deteksi anomali, mempercepat root cause analysis, dan memungkinkan self-healing otonom pada infrastruktur FoodLAB. \\
+  \end{tblr}
+\end{table}
+
+Berdasarkan Tabel \ref{tab:perbandingan_penelitian}, terdapat beberapa temuan penting dari penelitian-penelitian sebelumnya. Pertama, integrasi multiple jenis data telemetri (multi-signal telemetry) terbukti meningkatkan akurasi deteksi anomali dan root cause analysis dibandingkan pendekatan single-signal. Kedua, pendekatan berbasis ML untuk prioritisasi alert dapat secara signifikan mengurangi false-positive dan meningkatkan efektivitas respons insiden. Ketiga, penelitian-penelitian terkait menunjukkan bahwa remediasi otonom dimungkinkan dengan arsitektur multi-agent dan LLM-based reasoning \cite{fu2025leveraging}, namun evaluasi yang ada masih terbatas pada lingkungan Kubernetes skala enterprise. Keempat, kemampuan lokalisasi root cause hingga level kode membuka peluang untuk remediasi yang lebih presisi, termasuk perbaikan kode otomatis.
+
+Sementara itu, penelitian ini berbeda dari penelitian sebelumnya karena secara khusus memfokuskan pada penerapan konsep ADMA pada infrastruktur Docker backend aplikasi FoodLAB di lingkungan kampus. Implementasi menggunakan Go binary sebagai agent monitoring dan C\# ASP.NET Core sebagai control plane memberikan pendekatan arsitektural yang berbeda dari framework Kubernetes-native. Konteks FoodLAB yang dikembangkan secara estafet oleh tim yang berganti setiap periode menjadi keunikan tersendiri, di mana sistem monitoring otonom diharapkan dapat mengurangi dampak knowledge gap dan meningkatkan kelangsungan pengelolaan infrastruktur.
