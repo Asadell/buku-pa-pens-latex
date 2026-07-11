@@ -73,9 +73,9 @@ Dalam framework ADMA yang diusulkan, LLM berperan sebagai reasoning core yang me
 
 \subsection{NATS Messaging System}
 
-NATS adalah sistem messaging berkinerja tinggi yang dirancang untuk komunikasi cloud-native \cite{fernando2021designing}. NATS menyediakan beberapa model komunikasi, termasuk publish-subscribe, request-reply, dan queue groups yang memungkinkan komunikasi asinkron dan decoupled antara komponen sistem.
+NATS adalah sistem messaging berkinerja tinggi yang dirancang untuk komunikasi cloud-native \cite{ibrahim2026nats}. NATS menyediakan beberapa model komunikasi, termasuk publish-subscribe, request-reply, dan queue groups yang memungkinkan komunikasi asinkron dan decoupled antara komponen sistem.
 
-Dalam arsitektur ADMA, NATS digunakan sebagai transport layer untuk komunikasi antara Go binary (agent yang berjalan di server target) dan C\# backend (control plane). Pemilihan NATS didasarkan pada beberapa keunggulan: latensi rendah (sub-millisecond), footprint yang ringan, dukungan untuk at-most-once dan at-least-once delivery, serta kemampuan auto-reconnect yang penting untuk lingkungan yang tidak stabil \cite{fernando2021designing}.
+Dalam arsitektur ADMA, NATS digunakan sebagai transport layer untuk komunikasi antara Go binary (agent yang berjalan di server target) dan C\# backend (control plane). Pemilihan NATS didasarkan pada beberapa keunggulan: latensi rendah (sub-millisecond), footprint yang ringan, model pengiriman pesan at-most-once, serta kemampuan auto-reconnect yang penting untuk lingkungan yang tidak stabil \cite{ibrahim2026nats}. Kehilangan pesan sementara akibat putusnya koneksi dimitigasi di level aplikasi melalui mekanisme re-handshake dan pemulihan status dari \textit{PendingCandidates} pada saat agent terhubung kembali.
 
 \subsection{Arsitektur Multi-Agent (Perception-Reasoning-Action)}
 
@@ -100,9 +100,9 @@ di mana $s(t) \in S$ adalah system state pada waktu $t$, serta $L_{\text{perceiv
 
 \subsection{Go Programming Language}
 
-Go (atau Golang) adalah bahasa pemrograman sistem yang dikembangkan oleh Google, pertama kali dirilis pada tahun 2009 \cite{tsoukalas2023microservices}. Go dirancang untuk memiliki sintaksis yang sederhana, kompilasi yang cepat, dan efisiensi eksekusi yang tinggi setara dengan bahasa C/C++, namun dengan model konkurensi yang lebih modern. Keunggulan utama Go terletak pada goroutine, yaitu unit eksekusi konkuren yang sangat ringan sehingga sebuah program Go dapat menjalankan ribuan goroutine secara bersamaan dengan footprint memori yang minimal, berbeda dengan thread OS konvensional yang membutuhkan alokasi memori yang jauh lebih besar.
+Go (atau Golang) adalah bahasa pemrograman sistem yang dikembangkan oleh Google, pertama kali dirilis pada tahun 2009. Go dirancang untuk memiliki sintaksis yang sederhana, kompilasi yang cepat, dan efisiensi eksekusi yang tinggi setara dengan bahasa C/C++, namun dengan model konkurensi yang lebih modern. Keunggulan utama Go terletak pada goroutine, yaitu unit eksekusi konkuren yang sangat ringan sehingga sebuah program Go dapat menjalankan ribuan goroutine secara bersamaan dengan footprint memori yang minimal, berbeda dengan thread OS konvensional yang membutuhkan alokasi memori yang jauh lebih besar. Togashi dan Klyuev \cite{togashi2014concurrency} membuktikan bahwa model konkurensi berbasis goroutine dan channel pada Go menghasilkan performa yang kompetitif dibandingkan thread Java, dengan overhead sinkronisasi yang lebih rendah.
 
-Go menghasilkan binary yang dapat dieksekusi secara mandiri (standalone binary) tanpa memerlukan runtime environment atau virtual machine terpisah, menjadikannya ideal untuk deployment sebagai single executable file \cite{tsoukalas2023microservices}. Fitur ini sangat relevan untuk ADMA Go binary, di mana agent didesain agar dapat didistribusikan ke server target sebagai satu file yang ringan tanpa instalasi dependensi tambahan. Selain itu, Go memiliki package standar yang kaya, termasuk paket untuk networking, HTTP, JSON, dan system calls, yang mendukung pengembangan perangkat lunak sistem yang komprehensif.
+Go menghasilkan binary yang dapat dieksekusi secara mandiri (standalone binary) tanpa memerlukan runtime environment atau virtual machine terpisah, menjadikannya ideal untuk deployment sebagai single executable file. Fitur ini sangat relevan untuk ADMA Go binary, di mana agent didesain agar dapat didistribusikan ke server target sebagai satu file yang ringan tanpa instalasi dependensi tambahan. Selain itu, Go memiliki package standar yang kaya, termasuk paket untuk networking, HTTP, JSON, dan system calls, yang mendukung pengembangan perangkat lunak sistem yang komprehensif.
 
 \subsection{ASP.NET Core}
 
@@ -126,9 +126,9 @@ Untuk menyajikan data observability yang kompleks secara visual dan intuitif, da
 
 \subsection{Keycloak}
 
-Keycloak adalah solusi Identity and Access Management (IAM) open-source yang dikembangkan oleh Red Hat, menyediakan fitur Single Sign-On (SSO), autentikasi multi-faktor, dan manajemen identitas terpusat \cite{thorgersen2023keycloak}. Keycloak mengimplementasikan standar industri OpenID Connect (OIDC) dan OAuth 2.0, memungkinkan aplikasi untuk mendelegasikan proses autentikasi kepada Keycloak tanpa perlu menyimpan credential pengguna secara langsung.
+Keycloak adalah solusi Identity and Access Management (IAM) open-source yang dikembangkan oleh Red Hat, menyediakan fitur Single Sign-On (SSO), autentikasi multi-faktor, dan manajemen identitas terpusat. Keycloak mengimplementasikan standar industri OpenID Connect (OIDC) dan OAuth 2.0, memungkinkan aplikasi untuk mendelegasikan proses autentikasi kepada Keycloak tanpa perlu menyimpan credential pengguna secara langsung \cite{chatterjee2022keycloak}.
 
-Dalam arsitektur ADMA, Keycloak diintegrasikan sebagai SSO provider untuk dashboard frontend. Frontend mendapatkan JWT (JSON Web Token) dari Keycloak setelah pengguna berhasil login, kemudian token tersebut dikirim sebagai Bearer token pada setiap request HTTP ke backend ASP.NET Core. Backend memvalidasi token JWT menggunakan library \texttt{Microsoft.AspNetCore.Authentication.JwtBearer} secara stateless, tanpa perlu menghubungi Keycloak pada setiap request \cite{thorgersen2023keycloak}. Pendekatan ini memastikan bahwa credential pengguna tidak pernah diproses langsung oleh ADMA backend; seluruh siklus autentikasi dikelola oleh Keycloak sebagai trusted identity provider.
+Dalam arsitektur ADMA, Keycloak diintegrasikan sebagai SSO provider untuk dashboard frontend. Frontend mendapatkan JWT (JSON Web Token) dari Keycloak setelah pengguna berhasil login, kemudian token tersebut dikirim sebagai Bearer token pada setiap request HTTP ke backend ASP.NET Core. Backend memvalidasi token JWT menggunakan library \texttt{Microsoft.AspNetCore.Authentication.JwtBearer} secara stateless, tanpa perlu menghubungi Keycloak pada setiap request \cite{chatterjee2022keycloak}. Pendekatan ini memastikan bahwa credential pengguna tidak pernah diproses langsung oleh ADMA backend; seluruh siklus autentikasi dikelola oleh Keycloak sebagai trusted identity provider.
 
 \subsection{PostgreSQL dan Pemantauan Database}
 
@@ -183,9 +183,9 @@ Untuk memberikan gambaran komprehensif mengenai posisi dan kontribusi penelitian
   \label{tab:perbandingan_penelitian}
   \centering
   \begin{tblr}{
-    colspec = {X[2,l] X[3,l] X[3,l] X[4,l]},
+    colspec = {X[3.5,l] X[2.5,l] X[2.5,l] X[3.5,l]},
     hlines, vlines,
-    row{1} = {font=\bfseries},
+    row{1} = {halign=c},  % override colspec X[l] - font & bg dari SetTblrInner global
     cells = {valign=m}
   }
     Judul Penelitian & Fokus Penelitian & Metodologi & Hasil Penelitian \\

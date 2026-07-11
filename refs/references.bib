@@ -1,5 +1,5 @@
 @article{trabelsi2025systematic,
-  author   = {I. Trabelsi and B. Mahmoudi and J. B. Minani and N. Moha and Y. Gu{\'{e}}h{\'{e}}neuc},
+  author   = {I. Trabelsi and B. Mahmoudi and J. B. Minani and N. Moha and Y. Gu{\'e}h{\'e}neuc},
   journal  = {IEEE Transactions on Software Engineering},
   title    = {A Systematic Literature Review of Machine Learning Approaches for Migrating Monolithic Systems to Microservices},
   year     = {2025},
@@ -8,18 +8,18 @@
 }
 
 @article{trinity2023,
-  author   = {TrinityRCL},
+  author   = {S. Gu and G. Rong and T. Ren and H. Zhang and H. Shen and Y. Yu and X. Li and J. Ouyang and C. Chen},
   journal  = {IEEE Transactions on Software Engineering},
   title    = {TrinityRCL: Multi-Granular and Code-Level Root Cause Localization Using Multiple Types of Telemetry Data in Microservice Systems},
   year     = {2023},
   volume   = {49},
   number   = {5},
   pages    = {3071--3088},
-  doi      = {10.1109/tse.2023.3241299}
+  doi      = {10.1109/TSE.2023.3241299}
 }
 
 @article{hrusto2025monitoring,
-  author   = {A. Hrusto and N. {bin Ali} and E. Engstr{\"{o}}m and Y. Wang},
+  author   = {A. Hrusto and N. {bin Ali} and E. Engstr{\"o}m and Y. Wang},
   journal  = {ACM Transactions on Software Engineering and Methodology},
   title    = {Monitoring Data for Anomaly Detection in Cloud-Based Systems: A Systematic Mapping Study},
   year     = {2025},
@@ -190,20 +190,46 @@
   doi       = {10.1109/ICEBE59336.2023.00046}
 }
 
-@book{fernando2021designing,
-  author    = {C. Fernando},
-  title     = {Designing Microservices Platforms with NATS: A Modern Approach to Designing and Implementing Scalable Microservices Platforms with NATS Messaging},
-  publisher = {Packt Publishing},
-  address   = {Birmingham, U.K.},
-  year      = {2021}
+% [22] Pengganti: Ibrahim et al., OL2A 2025 (Springer CCIS) -- membandingkan NATS, Kafka,
+%      ActiveMQ Artemis, RabbitMQ pada arsitektur mikroservis.
+%      doi: 10.1007/978-3-032-00137-5_1
+@inproceedings{ibrahim2026nats,
+  author    = {A. G. Ibrahim and R. P. Lopes and J. Rufino and P. Leit{\~a}o},
+  title     = {On the Impact of Message Brokers Implementations in the Choreography of Microservices},
+  booktitle = {Optimization, Learning Algorithms and Applications (OL2A 2025), Communications in Computer and Information Science},
+  volume    = {2617},
+  publisher = {Springer},
+  address   = {Cham},
+  year      = {2026},
+  pages     = {3--17},
+  doi       = {10.1007/978-3-032-00137-5_1}
 }
 
-@book{tsoukalas2023microservices,
-  author    = {A. Tsoukalas},
-  title     = {Microservices with Go: Building Scalable and Reliable Microservices with Go},
-  publisher = {Packt Publishing},
-  address   = {Birmingham, U.K.},
-  year      = {2023}
+% [23] Pengganti: Togashi & Klyuev, IEEE ICIST 2014 -- evaluasi performa concurrency Go vs Java,
+%      relevan sebagai justifikasi pemilihan Go untuk agent multi-goroutine ADMA.
+%      doi: 10.1109/ICIST.2014.6920368
+@inproceedings{togashi2014concurrency,
+  author    = {N. Togashi and V. Klyuev},
+  title     = {Concurrency in Go and Java: Performance Analysis},
+  booktitle = {Proc. 2014 4th IEEE International Conference on Information Science and Technology (ICIST)},
+  address   = {Shenzhen},
+  year      = {2014},
+  pages     = {213--216},
+  doi       = {10.1109/ICIST.2014.6920368}
+}
+
+% [26] Pengganti: Chatterjee & Prinz, Sensors 2022 (MDPI, Scopus/WoS) -- Keycloak OAuth2
+%      untuk mengamankan API arsitektur mikroservis.
+%      doi: 10.3390/s22051703
+@article{chatterjee2022keycloak,
+  author   = {A. Chatterjee and A. Prinz},
+  journal  = {Sensors},
+  title    = {Applying Spring Security Framework with KeyCloak-Based OAuth2 to Protect Microservice Architecture APIs: A Case Study},
+  year     = {2022},
+  volume   = {22},
+  number   = {5},
+  pages    = {1703},
+  doi      = {10.3390/s22051703}
 }
 
 @inproceedings{valiveti2025evolution,
@@ -222,15 +248,6 @@
   year      = {2023},
   pages     = {137--145},
   doi       = {10.1145/3617023.3617057}
-}
-
-@book{thorgersen2023keycloak,
-  author    = {S. Thorgersen and P. I. Silva},
-  title     = {Keycloak: Identity and Access Management for Modern Applications},
-  publisher = {Packt Publishing},
-  address   = {Birmingham, U.K.},
-  edition   = {2nd},
-  year      = {2023}
 }
 
 @article{salunke2024performance,
