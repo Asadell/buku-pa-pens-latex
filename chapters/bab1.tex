@@ -1,62 +1,62 @@
 %============================================================
 % BAB 1: PENDAHULUAN
-% Struktur:
-%   Proposal/Progres (\ifbukupa = false):
-%     1.1 Latar Belakang, 1.2 Permasalahan, 1.3 Tujuan,
-%     1.4 Manfaat, 1.5 Sistematika Penulisan
-%   Buku PA (\ifbukupa = true):
-%     1.1 Latar Belakang, 1.2 Permasalahan, 1.3 Batasan Masalah,
-%     1.4 Tujuan, 1.5 Manfaat, 1.6 Sistematika Penulisan
+% Struktur (Proposal dan Buku PA):
+%   1.1 Latar Belakang
+%   1.2 Permasalahan
+%   1.3 Batasan Masalah
+%   1.4 Tujuan
+%   1.5 Manfaat
+%   1.6 Sistematika Penulisan
 %============================================================
 \chapter{PENDAHULUAN}
 
 \section{LATAR BELAKANG}
 
-Perkembangan arsitektur perangkat lunak modern yang beralih dari aplikasi monolitik ke sistem berbasis \textit{microservice} dan \textit{container} telah menciptakan kompleksitas operasional yang sangat tinggi \cite{trabelsi2025systematic}. Lingkungan produksi kontemporer dapat terdiri dari ratusan layanan yang saling bergantung, masing-masing menghasilkan volume data telemetri yang besar dalam bentuk metrik, \textit{log}, dan \textit{distributed traces} \cite{trinity2023}. Kompleksitas ini menuntut pendekatan \textit{monitoring} yang lebih cerdas dan adaptif dibandingkan metode konvensional yang masih bergantung pada intervensi manusia secara manual \cite{hrusto2025monitoring}.
+Perkembangan arsitektur perangkat lunak modern yang beralih dari aplikasi monolitik ke sistem berbasis \textit{microservice} dan \textit{container} membuat proses migrasi maupun pengoperasiannya menjadi kompleks dan menuntut sumber daya yang signifikan \cite{trabelsi2025systematic}. Lingkungan produksi kontemporer dapat terdiri dari banyak layanan yang saling bergantung dan menghasilkan volume data telemetri yang besar, sehingga menuntut pendekatan \textit{monitoring} yang lebih cerdas dibandingkan metode konvensional yang masih bergantung pada intervensi manusia secara manual \cite{hrusto2025monitoring}.
 
-Salah satu contoh nyata dari tantangan ini adalah pengelolaan infrastruktur \textit{backend} aplikasi FoodLAB di Politeknik Elektronika Negeri Surabaya (PENS). FoodLAB merupakan aplikasi pemesanan makanan daring yang dirancang untuk memudahkan civitas akademika dalam memesan makanan di kantin kampus. \textit{Observability}, yakni kemampuan sistem untuk memperlihatkan kondisi internalnya melalui data telemetri berupa metrik, \textit{log}, dan \textit{traces}, menjadi kualitas kritis yang harus dimiliki infrastruktur \textit{backend} FoodLAB agar ketersediaan layanannya dapat dijaga \cite{trinity2023}. Seiring bertambahnya fitur dan kompleksitas sistem, termasuk integrasi dengan layanan eksternal seperti \textit{Firebase Cloud Messaging}, \textit{payment gateway}, dan pengelolaan \textit{multi-tenant}, tantangan dalam menjaga ketersediaan dan keandalan \textit{backend} semakin meningkat \cite{trinity2023}. Pendekatan \textit{monitoring} tradisional yang berbasis pada \textit{alert threshold} statis dan respons insiden manual terbukti tidak memadai untuk mengelola kompleksitas ini secara efektif \cite{hrusto2025monitoring}.
+Tantangan ini juga dihadapi oleh infrastruktur \textit{backend} aplikasi FoodLAB di Politeknik Elektronika Negeri Surabaya (PENS), aplikasi pemesanan makanan daring untuk civitas akademika kampus. \textit{Observability}, yakni kemampuan sistem untuk memperlihatkan kondisi internalnya melalui data telemetri berupa \textit{metrics}, \textit{log}, dan \textit{traces}, menjadi kualitas kritis yang harus dimiliki infrastruktur \textit{backend} FoodLAB \cite{trinity2023}. Kondisi ini diperberat oleh proses \textit{rewrite} arsitektur \textit{backend} FoodLAB dari Laravel dan MySQL menuju ASP.NET Core dan PostgreSQL yang sedang berlangsung, serta akumulasi \textit{code smells} dan \textit{technical debt} akibat pengembangan estafet oleh berbagai generasi mahasiswa \cite{yulanda2025refactoring}. Selama periode transisi tersebut, kondisi operasional sistem menjadi sulit diprediksi sehingga mekanisme deteksi anomali yang adaptif menjadi lebih penting dibandingkan pendekatan berbasis \textit{threshold} statis.
 
-Tantangan ini menjadi semakin kompleks karena \textit{backend} FoodLAB saat ini sedang menjalani proses penulisan ulang (\textit{rewrite}) arsitektur secara menyeluruh, beralih dari \textit{framework} Laravel dengan \textit{database} MySQL ke ASP.NET Core dengan PostgreSQL sebagai \textit{database} utama \cite{trabelsi2025systematic}. Migrasi dari sistem monolitik menuju arsitektur \textit{backend} yang lebih modern memang umum dilakukan untuk meningkatkan skalabilitas dan \textit{maintainability} jangka panjang, namun proses migrasi semacam ini terbukti meningkatkan kompleksitas operasional secara signifikan selama periode transisi \cite{trabelsi2025systematic}. Pada kasus FoodLAB, kebutuhan \textit{rewrite} ini turut didorong oleh temuan \textit{code smells} dan \textit{technical debt} pada basis kode yang terakumulasi akibat pengembangan estafet oleh berbagai generasi mahasiswa \cite{yulanda2025refactoring}. Selama periode transisi semacam ini, kondisi operasional sistem menjadi sulit diprediksi karena pola normalnya terus berubah akibat perubahan \textit{stack} teknologi dan \textit{deployment} yang terjadi secara bertahap, sehingga mekanisme deteksi anomali yang adaptif menjadi semakin penting dibandingkan pendekatan berbasis \textit{threshold} statis \cite{voutsas2024mitigating}. Oleh karena itu, \textit{framework} ADMA pada penelitian ini dirancang sejak tahap awal untuk menyongsong infrastruktur \textit{backend} FoodLAB generasi berikutnya yang berbasis ASP.NET Core dan PostgreSQL, sekaligus tetap relevan untuk mengelola risiko ketidakpastian operasional yang muncul selama proses transisi tersebut \cite{trabelsi2025systematic}.
+Pendekatan \textit{monitoring} DevOps tradisional yang mengandalkan \textit{threshold} statis dan respons insiden manual memiliki keterbatasan signifikan. Pada infrastruktur produksi skala menengah dapat muncul ribuan metrik dengan puluhan hingga ratusan jenis \textit{alert}, sehingga administrator rentan mengalami \textit{alert fatigue} dan mulai mengabaikan \textit{alert} yang sebenarnya penting \cite{voutsas2024mitigating}. Di sisi lain, mekanisme \textit{self-healing} konvensional yang berbasis \textit{runbook} dan skrip otomasi hanya efektif untuk skenario kegagalan yang telah diantisipasi sebelumnya, dan tidak mampu bernalar untuk menangani pola kegagalan baru maupun kegagalan \textit{cascading} yang kompleks \cite{liang2023self}. Keterbatasan ini menjadi semakin kritis pada aplikasi seperti FoodLAB yang terus berkembang dan ditangani oleh tim pengembang yang berganti secara periodik.
 
-Pendekatan \textit{monitoring} \textit{DevOps} tradisional yang mengandalkan \textit{threshold} statis, \textit{runbook} yang telah ditentukan sebelumnya, dan respons insiden yang bergantung pada manusia memiliki keterbatasan yang signifikan \cite{hrusto2025monitoring}. Tim \textit{Site Reliability Engineering} (SRE) menghadapi beban kognitif yang tinggi dan kelelahan akibat \textit{alert} yang berlebihan (\textit{alert fatigue}), di mana \textit{false-positive rate} pada sistem berbasis \textit{threshold} statis dapat mencapai 20-40\% di lingkungan produksi \cite{voutsas2024mitigating}. Kesenjangan antara laju anomali yang dihasilkan oleh sistem dan kemampuan operator manusia untuk merespons secara bermakna terus melebar seiring pertumbuhan skala sistem \cite{hrusto2025monitoring}.
+Kemajuan \textit{Large Language Models} (LLM) dan \textit{framework agentic AI} membuka peluang pendekatan \textit{monitoring} yang lebih adaptif. LLM terbukti mampu melakukan penalaran kontekstual untuk tugas yang kompleks dan tidak terstruktur \cite{xu2025large}, sementara integrasi kecerdasan adaptif berbasis AI ke dalam alur \textit{DevSecOps} mampu meningkatkan kemampuan deteksi dan respons secara signifikan \cite{dinh2025enhancing}. Arsitektur \textit{multi-agent} berlapis yang terdiri dari \textit{Perception Layer}, \textit{Reasoning Layer}, dan \textit{Action Layer} juga terbukti efektif untuk dekomposisi tugas \textit{root cause analysis} \cite{fu2025leveraging}. Berdasarkan hal tersebut, penelitian ini mengusulkan \textit{framework} \textit{Agentic DevOps Monitoring Agents} (ADMA) untuk mengumpulkan dan menganalisis telemetri multi-sinyal FoodLAB secara \textit{real-time}, melakukan diagnosis akar masalah otomatis berbasis LLM, serta mengeksekusi remediasi secara otonom, sehingga \textit{observability} dan kelangsungan pengembangan \textit{backend} FoodLAB dapat lebih terjaga.
 
-Mekanisme \textit{self-healing}, yaitu kemampuan sistem untuk secara otomatis mendeteksi, mendiagnosis, dan memulihkan diri dari kegagalan tanpa intervensi manusia, pada sistem konvensional yang berbasis \textit{runbook} dan skrip otomasi terbukti hanya efektif untuk skenario kegagalan yang telah diantisipasi sebelumnya \cite{liang2023self}. Sistem-sistem tersebut tidak mampu bernalar untuk menangani pola kegagalan baru maupun menyusun rencana remediasi multi-langkah pada kegagalan \textit{cascading} yang kompleks. Keterbatasan ini menjadi semakin kritis ketika diterapkan pada aplikasi seperti FoodLAB yang terus berkembang dan ditangani oleh tim pengembang yang berganti secara periodik di lingkungan kampus \cite{yulanda2025refactoring}.
-
-Kemajuan terkini dalam kecerdasan buatan, khususnya \textit{Large Language Models} (LLM), yaitu model bahasa berskala besar yang mampu melakukan penalaran generatif dan memahami konteks secara mendalam, serta \textit{framework} \textit{agentic AI}, membuka peluang fundamental untuk mengubah paradigma \textit{monitoring} \cite{xu2025large}. Konsep \textit{Agentic DevOps Monitoring Agents} (ADMA) memungkinkan agen-agen cerdas tidak hanya mendeteksi dan mendiagnosis anomali, tetapi juga secara mandiri menjalankan tindakan korektif untuk memulihkan kondisi sistem yang diinginkan \cite{dinh2025enhancing}. Arsitektur \textit{multi-agent} berlapis yang terdiri dari \textit{Perception Agents}, \textit{Reasoning Agents}, dan \textit{Action Agents} memberikan kerangka kerja yang komprehensif untuk \textit{observability} otonom \cite{zou2022docker}.
-
-Dalam konteks FoodLAB, penerapan \textit{framework} ADMA diharapkan dapat mengatasi keterbatasan \textit{monitoring} konvensional dengan menyediakan sistem yang mampu: (1) mengumpulkan dan menganalisis telemetri multi-sinyal secara \textit{real-time} dari berbagai sumber seperti PostgreSQL, Docker \textit{container} \textit{logs}, dan \textit{resource} sistem; (2) melakukan diagnosa \textit{root cause} secara otomatis menggunakan \textit{reasoning} berbasis LLM; serta (3) mengeksekusi tindakan remediasi secara otonom, termasuk \textit{restart container}, perbaikan konfigurasi, hingga pembuatan \textit{merge request} untuk perbaikan kode sumber. Pendekatan ini tidak hanya meningkatkan \textit{observability}, tetapi juga mendukung kelangsungan pengembangan \textit{backend} aplikasi FoodLAB secara berkelanjutan di lingkungan kampus.
-
-\section{PERMASALAHAN}
+\section{RUMUSAN MASALAH}
 
 Infrastruktur \textit{backend} aplikasi FoodLAB di Politeknik Elektronika Negeri Surabaya (PENS) menghadapi beberapa permasalahan terkait \textit{monitoring} dan pemulihan insiden yang berpotensi menghambat ketersediaan layanan dan pengembangan jangka panjang:
 
 \begin{enumerate}[label=\arabic*., leftmargin=*]
   \item \textbf{\textit{Monitoring} yang Reaktif dan Bergantung pada Manusia}\\
-  Sistem \textit{monitoring} konvensional yang digunakan pada infrastruktur FoodLAB masih berbasis \textit{threshold} statis yang menghasilkan \textit{false-positive rate} tinggi dan \textit{alert fatigue}. Operator harus melakukan investigasi manual terhadap berbagai sumber data seperti \textit{log}, metrik, dan \textit{resource} secara terpisah, yang menyulitkan tim dalam mendeteksi dan memulihkan insiden secara cepat. Kondisi ini berdampak pada memanjangnya dua metrik kunci manajemen insiden: \textit{Mean Time to Detect} (MTTD) dan \textit{Mean Time to Recovery} (MTTR). MTTD adalah rata-rata waktu yang dibutuhkan untuk mendeteksi suatu masalah sejak masalah tersebut terjadi, sedangkan MTTR adalah rata-rata waktu yang dibutuhkan untuk memulihkan sistem ke kondisi normal setelah insiden terdeteksi. Keduanya terdampak secara signifikan ketika visibilitas sistem tidak memadai \cite{voutsas2024mitigating}.
+        Sistem \textit{monitoring} konvensional yang digunakan pada infrastruktur FoodLAB masih berbasis \textit{threshold} statis yang menghasilkan \textit{false-positive rate} tinggi dan \textit{alert fatigue}. Operator harus melakukan investigasi manual terhadap berbagai sumber data seperti \textit{log}, metrik, dan \textit{resource} secara terpisah, yang menyulitkan tim dalam mendeteksi dan memulihkan insiden secara cepat. Kondisi ini berdampak pada memanjangnya dua metrik kunci manajemen insiden: \textit{Mean Time to Detect} (MTTD) dan \textit{Mean Time to Recovery} (MTTR). MTTD adalah rata-rata waktu yang dibutuhkan untuk mendeteksi suatu masalah sejak masalah tersebut terjadi, sedangkan MTTR adalah rata-rata waktu yang dibutuhkan untuk memulihkan sistem ke kondisi normal setelah insiden terdeteksi. Keduanya terdampak secara signifikan ketika visibilitas sistem tidak memadai \cite{voutsas2024mitigating}.
 
   \item \textbf{Ketiadaan \textit{Root Cause Analysis} Otomatis}\\
-  Ketika terjadi anomali pada \textit{backend} FoodLAB, seperti \textit{container} \textit{crash}, \textit{query} \textit{database} yang lambat, atau \textit{resource exhaustion}, operator harus secara manual menelusuri \textit{log} dan metrik dari berbagai komponen untuk mengidentifikasi akar masalah. Proses ini rawan kesalahan dan memakan waktu lama, terutama pada kegagalan \textit{cascading} yang melibatkan beberapa komponen sekaligus \cite{trinity2023}.
+        Ketika terjadi anomali pada \textit{backend} FoodLAB, seperti \textit{container} \textit{crash}, \textit{query} \textit{database} yang lambat, atau \textit{resource exhaustion}, operator harus secara manual menelusuri \textit{log} dan metrik dari berbagai komponen untuk mengidentifikasi akar masalah. Proses ini rawan kesalahan dan memakan waktu lama, terutama pada kegagalan \textit{cascading} yang melibatkan beberapa komponen sekaligus \cite{trinity2023}.
+
+  \item \textbf{Tidak Efisiennya \textit{Root Cause Analysis} Akibat Ketiadaan Penyaringan Sinyal Awal}\\
+        Proses \textit{root cause analysis} yang memanggil \textit{Large Language Model} secara langsung tanpa mekanisme penyaringan awal berisiko menimbulkan biaya operasional yang tinggi dan waktu respons yang lambat ketika sistem menangani banyak sinyal anomali secara bersamaan. Tanpa mekanisme untuk membatasi kandidat investigasi yang diteruskan ke LLM, seluruh daftar \textit{tool} yang tersedia akan dikonsumsi setiap siklus penalaran, sehingga konsumsi \textit{token} tumbuh secara tidak terkendali seiring pertumbuhan skala sistem \cite{voutsas2024mitigating}.
+
+  \item \textbf{Ketiadaan Mekanisme Perbaikan Kode Otomatis}\\
+        Ketika akar masalah teridentifikasi berasal dari cacat pada kode sumber aplikasi, belum ada mekanisme otomatis yang menghasilkan usulan perbaikan kode. Proses perbaikan sepenuhnya bergantung pada intervensi manual pengembang, termasuk untuk kasus perbaikan sederhana yang berulang. Kondisi ini diperparah oleh \textit{knowledge gap} akibat pergantian tim pengembang secara berkala, yang memperpanjang waktu pemulihan bahkan untuk masalah yang sebenarnya dapat diotomasi \cite{liang2023self}.
 
   \item \textbf{Tidak Adanya Mekanisme \textit{Self-Healing}}\\
-  \textit{Backend} FoodLAB belum memiliki kemampuan untuk secara otomatis melakukan tindakan korektif saat terjadi insiden. Setiap kegagalan, mulai dari \textit{container} yang \textit{crash} hingga konfigurasi yang salah, memerlukan intervensi manual dari tim pengembang. Hal ini menjadi semakin problematik mengingat pengembangan FoodLAB dilakukan secara estafet oleh tim yang berganti setiap periode, sehingga \textit{knowledge gap} mengenai infrastruktur dapat memperlambat proses pemulihan \cite{liang2023self}.
+        \textit{Backend} FoodLAB belum memiliki kemampuan untuk secara otomatis melakukan tindakan korektif saat terjadi insiden. Setiap kegagalan, mulai dari \textit{container} yang \textit{crash} hingga konfigurasi yang salah, memerlukan intervensi manual dari tim pengembang. Hal ini menjadi semakin problematik mengingat pengembangan FoodLAB dilakukan secara estafet oleh tim yang berganti setiap periode, sehingga \textit{knowledge gap} mengenai infrastruktur dapat memperlambat proses pemulihan \cite{liang2023self}.
 \end{enumerate}
 
 Untuk mengatasi permasalahan tersebut, diperlukan suatu sistem \textit{monitoring} cerdas yang mampu melakukan deteksi anomali secara proaktif, analisis \textit{root cause} secara otomatis, dan eksekusi remediasi secara otonom. \textit{Framework} \textit{Agentic DevOps Monitoring Agents} (ADMA) diusulkan sebagai solusi yang mengintegrasikan kemampuan AI berbasis LLM untuk mengubah paradigma \textit{monitoring} dari reaktif menjadi proaktif dan otonom pada infrastruktur \textit{backend} FoodLAB.
 
-% Batasan Masalah: hanya tampil di Buku PA
-\ifbukupa
 \section{BATASAN MASALAH}
 
-Deskripsikan dengan jelas hal-hal yang perlu dibatasi dari permasalahan yang diselesaikan
-dalam proyek akhir. Deskripsi batasan masalah sebaiknya dituliskan dalam bentuk
-\textit{itemik}.
+Dalam pelaksanaan Proyek Akhir ini, terdapat beberapa batasan yang ditetapkan agar penelitian lebih terfokus dan terarah, yaitu:
 
 \begin{enumerate}[label=\arabic*., leftmargin=*]
-  \item Batasan masalah pertama.
-  \item Batasan masalah kedua.
-  \item Batasan masalah ketiga.
+  \item Pemantauan \textit{database} oleh \textit{Metric Perception Agent} (MPA) hanya mencakup PostgreSQL. \textit{Backend} FoodLAB versi lama yang masih berjalan di atas MySQL (Laravel) tidak termasuk dalam cakupan pemantauan MPA, meskipun \textit{Log Perception Agent} dan \textit{System Resource Agent} tetap dapat memantau \textit{container} dan \textit{resource host} pada kedua \textit{environment} secara \textit{database-agnostic}.
+  \item Evaluasi sistem dilakukan pada lingkungan \textit{staging} yang mereplikasi infrastruktur FoodLAB generasi baru berbasis ASP.NET Core dan PostgreSQL, bukan pada infrastruktur produksi FoodLAB yang melayani pengguna aktif.
+  \item Infrastruktur target yang dipantau berbasis Docker mandiri, tidak mencakup lingkungan \textit{container orchestration} seperti Kubernetes.
+  \item \textit{Reasoning Engine} dievaluasi menggunakan Claude API sebagai jalur utama. Penggunaan model LLM lokal (Qwen3-14B) dibahas sebagai alternatif desain untuk skenario keterbatasan \textit{resource} GPU, bukan bagian dari evaluasi eksperimen utama pada Bab IV.
+  \item \textit{Action Executor} dibatasi pada tindakan \textit{restart container}, perbaikan konfigurasi, \textit{kill query database}, dan pembuatan \textit{merge request} GitLab; tidak mencakup tindakan skala infrastruktur lain seperti \textit{auto-scaling} atau migrasi \textit{server}.
+  \item \textit{Code Fix Agent} hanya aktif untuk \textit{container} berkategori \textit{application} yang memiliki kode sumber di GitLab, dan tidak aktif untuk \textit{container} berkategori \textit{database} atau \textit{infrastructure}.
+  \item Data operasional yang dikirim ke layanan LLM pihak ketiga dibatasi pada \textit{log}, \textit{query}, dan cuplikan kode teknis yang relevan dengan insiden yang sedang diinvestigasi, bukan data pribadi pengguna aplikasi FoodLAB.
+  \item Penelitian dilaksanakan pada periode Juli hingga Agustus 2026 sesuai jadwal Proyek Akhir.
 \end{enumerate}
-\fi
 
 \section{TUJUAN}
 
@@ -66,19 +66,24 @@ Tujuan dari proyek ini adalah untuk meningkatkan \textit{observability} dan kema
   \item Merancang dan mengimplementasikan sistem \textit{multi-agent} otonom yang mampu melakukan \textit{monitoring} \textit{real-time} pada infrastruktur \textit{backend} FoodLAB, mencakup PostgreSQL, Docker \textit{container} \textit{logs}, dan \textit{resource} sistem.
   \item Mengembangkan mekanisme \textit{reasoning} berbasis LLM yang mampu melakukan \textit{root cause analysis} secara otomatis berdasarkan data telemetri multi-sinyal yang dikumpulkan oleh \textit{Perception Agents}.
   \item Merancang mekanisme korelasi sinyal (\textit{Alert Correlator}) dan penyaringan kandidat investigasi (\textit{Pre-Filter}) berbasis aturan deterministik untuk mengurangi beban pemanggilan LLM, serta menghitung tingkat keyakinan diagnosis (\texttt{ValidityScore}) sebagai dasar keputusan apakah \textit{pipeline} investigasi perlu diulang sebelum rencana remediasi diusulkan kepada operator.
-  \item Mengimplementasikan kemampuan \textit{self-healing} yang memungkinkan sistem secara otonom mengeksekusi tindakan remediasi seperti \textit{restart container}, perbaikan konfigurasi, dan pembuatan \textit{merge request} untuk perbaikan kode pada \textit{repository} GitLab.
-  \item Menyediakan \textit{control plane} terpusat melalui \textit{backend} C\# ASP.NET Core yang memungkinkan pengelolaan \textit{agent}, visualisasi status sistem, dan \textit{audit trail} seluruh aktivitas \textit{monitoring} dan remediasi.
+  \item Mengimplementasikan \textit{Code Fix Agent} yang mampu menghasilkan usulan perbaikan kode secara otomatis melalui pembuatan \textit{merge request} pada \textit{repository} GitLab.
+  \item Mengimplementasikan kemampuan \textit{self-healing} yang memungkinkan sistem secara otonom mengeksekusi tindakan remediasi seperti \textit{restart container} dan perbaikan konfigurasi.
+  \item Menyediakan \textit{control plane} terpusat melalui \textit{backend} C\# ASP.NET Core sebagai sarana pendukung tercapainya tujuan 1 sampai 5, yaitu untuk pengelolaan \textit{agent}, visualisasi status sistem, dan \textit{audit trail} seluruh aktivitas \textit{monitoring} dan remediasi.
 \end{enumerate}
 
 \section{MANFAAT}
 
-Proyek ini diharapkan memberikan manfaat signifikan baik dari sisi teknis pengelolaan infrastruktur maupun dari sisi keberlanjutan pengembangan aplikasi FoodLAB di PENS.
+Proyek ini diharapkan memberikan manfaat signifikan baik dari sisi teoritis maupun praktis dalam pengelolaan infrastruktur dan keberlanjutan pengembangan aplikasi FoodLAB di PENS.
+
+\textbf{Manfaat Teoritis}
+
+Dari sisi akademik, penelitian ini memberikan kontribusi berupa implementasi konkret dari konsep \textit{Agentic AI} untuk \textit{DevOps monitoring} pada lingkungan produksi nyata. Pendekatan ini mendemonstrasikan bahwa paradigma \textit{monitoring} otonom berbasis \textit{multi-agent} dan LLM dapat diterapkan pada skala aplikasi kampus dengan infrastruktur berbasis Docker, tidak hanya terbatas pada lingkungan Kubernetes skala \textit{enterprise}. Penelitian ini juga berkontribusi pada pengembangan metodologi evaluasi sistem \textit{agentic} yang terukur, mencakup metrik efisiensi token, akurasi \textit{root cause analysis}, dan laju pemulihan otonom.
+
+\textbf{Manfaat Praktis}
 
 Dari sisi operasional, penerapan ADMA diharapkan dapat mengurangi MTTD dan MTTR secara signifikan melalui deteksi anomali yang proaktif dan remediasi yang otonom. Sistem ini memungkinkan \textit{monitoring} 24/7 tanpa bergantung pada ketersediaan operator manusia, sehingga meningkatkan \textit{availability} layanan FoodLAB bagi civitas akademika PENS.
 
 Dari sisi pengembangan, ADMA menyediakan mekanisme \textit{observability} yang komprehensif melalui \textit{dashboard} dan \textit{audit trail} yang terpusat. Tim pengembang baru yang mengambil alih proyek FoodLAB dapat dengan mudah memahami kondisi infrastruktur, melihat riwayat insiden dan remediasi, serta mendapat manfaat dari kemampuan \textit{self-healing} yang mengurangi beban pengelolaan manual.
-
-Dari sisi akademik, penelitian ini memberikan kontribusi berupa implementasi konkret dari konsep \textit{Agentic AI} untuk \textit{DevOps monitoring} pada lingkungan produksi nyata. Pendekatan ini mendemonstrasikan bahwa paradigma \textit{monitoring} otonom dapat diterapkan pada skala aplikasi kampus dengan infrastruktur berbasis Docker, tidak hanya terbatas pada lingkungan Kubernetes skala \textit{enterprise}.
 
 Secara keseluruhan, manfaat utama dari proyek ini adalah terciptanya infrastruktur \textit{backend} FoodLAB yang lebih \textit{resilient}, \textit{observable}, dan \textit{self-healing}, sehingga mendukung kelangsungan pengembangan aplikasi secara berkelanjutan.
 

@@ -5,6 +5,8 @@
 
 Desain sistem merupakan rancangan arsitektur dan fungsionalitas dari \textit{framework} \textit{Agentic DevOps Monitoring Agents} (ADMA) yang diusulkan untuk mengatasi permasalahan \textit{observability} dan \textit{self-healing} pada \textit{backend} FoodLAB. ADMA dirancang sebagai sistem \textit{multi-agent} otonom yang bekerja secara terkoordinasi untuk memantau infrastruktur (\textit{Perception}), mendiagnosa akar permasalahan menggunakan kecerdasan buatan berbasis LLM (\textit{Reasoning}), dan mengeksekusi tindakan korektif (\textit{Action}) guna memulihkan sistem kembali ke kondisi normal.
 
+
+
 \section{DESKRIPSI SOLUSI}
 
 Sistem ADMA diusulkan sebagai solusi komprehensif untuk mengubah paradigma \textit{monitoring} \textit{backend} FoodLAB dari yang sebelumnya reaktif dan bergantung pada operator manusia menjadi proaktif dan otonom. Solusi ini didasarkan pada implementasi \textit{control loop} otonom berbasis arsitektur \textit{multi-agent} berlapis.
@@ -12,26 +14,26 @@ Sistem ADMA diusulkan sebagai solusi komprehensif untuk mengubah paradigma \text
 Fitur-fitur utama yang ditawarkan oleh \textit{framework} ADMA meliputi:
 \begin{enumerate}[label=\arabic*., leftmargin=*]
   \item \textbf{\textit{Autonomous Multi-Signal Perception Agent}}\\
-  Agen \textit{monitoring} yang ringan berbasis Go \textit{binary} yang berjalan di \textit{server} target. Agen ini mampu mengumpulkan telemetri dari berbagai sumber secara \textit{real-time}, termasuk \textit{query} PostgreSQL, \textit{log} Docker \textit{container}, dan \textit{resource utilization} sistem.
-  
+        Agen \textit{monitoring} yang ringan berbasis Go \textit{binary} yang berjalan di \textit{server} target. Agen ini mampu mengumpulkan telemetri dari berbagai sumber secara \textit{real-time}, termasuk \textit{query} PostgreSQL, \textit{log} Docker \textit{container}, dan \textit{resource utilization} sistem.
+
   \item \textbf{\textit{LLM-Based Reasoning Engine}}\\
-  Pusat penalaran yang menerima data telemetri dari \textit{Perception Agents} dan melakukan \textit{Root Cause Analysis} (RCA) secara otomatis menggunakan model bahasa besar. \textit{Engine} ini mendiagnosa akar masalah, mengevaluasi dampak, dan menyusun rencana remediasi.
-  
+        Pusat penalaran yang menerima data telemetri dari \textit{Perception Agents} dan melakukan \textit{Root Cause Analysis} (RCA) secara otomatis menggunakan model bahasa besar. \textit{Engine} ini mendiagnosa akar masalah, mengevaluasi dampak, dan menyusun rencana remediasi.
+
   \item \textbf{\textit{Deterministic Pre-Filter} dan \textit{Alert Correlator}}\\
-  Mekanisme penyaringan berbasis aturan (\textit{rule-based}) untuk mengkorelasikan sinyal dari berbagai agen dan menyaring kandidat sebelum dikirim ke LLM. Hal ini penting untuk mengoptimalkan biaya dan latensi pemanggilan API LLM, karena hanya \textit{subset} \textit{tool} yang relevan yang diteruskan ke model.
-  
-  \item \textbf{Otonom \textit{Action Executor} dan \textit{Code Fix Agent}}\\
-  Komponen yang mengeksekusi rencana aksi yang dihasilkan oleh \textit{Reasoning Engine}. Selain tindakan tingkat infrastruktur (seperti \textit{restart container} atau perbaikan konfigurasi), sistem dilengkapi dengan \textit{Code Fix Agent} yang mampu menghasilkan \textit{patch} perbaikan kode dan membuat \textit{merge request} secara otomatis pada \textit{repository} GitLab.
-  
+        Mekanisme penyaringan berbasis aturan (\textit{rule-based}) untuk mengkorelasikan sinyal dari berbagai agen dan menyaring kandidat sebelum dikirim ke LLM. Hal ini penting untuk mengoptimalkan biaya dan latensi pemanggilan API LLM, karena hanya \textit{subset} \textit{tool} yang relevan yang diteruskan ke model.
+
+  \item \textbf{\textit{Action Executor} Otonom dan \textit{Code Fix Agent}}\\
+        Komponen yang mengeksekusi rencana aksi yang dihasilkan oleh \textit{Reasoning Engine}. Selain tindakan tingkat infrastruktur (seperti \textit{restart container} atau perbaikan konfigurasi), sistem dilengkapi dengan \textit{Code Fix Agent} yang mampu menghasilkan \textit{patch} perbaikan kode dan membuat \textit{merge request} secara otomatis pada \textit{repository} GitLab.
+
   \item \textbf{\textit{Centralized Control Plane} dan \textit{Dashboard}}\\
-  Pusat manajemen terpusat berbasis web untuk memantau status seluruh \textit{agent}, meninjau \textit{log} aktivitas, serta memberikan kendali kepada administrator untuk mengaudit dan menyetujui rencana remediasi dengan tingkat risiko tinggi.
+        Pusat manajemen terpusat berbasis web untuk memantau status seluruh \textit{agent}, meninjau \textit{log} aktivitas, serta memberikan kendali kepada administrator untuk mengaudit dan menyetujui rencana remediasi dengan tingkat risiko tinggi.
 \end{enumerate}
 
-Dengan solusi ini, ketersediaan layanan \textit{backend} FoodLAB dapat dijaga secara optimal, sekaligus mengurangi beban kognitif pengembang dan mengatasi \textit{knowledge gap} antar generasi tim pengembang.
+Dengan solusi ini, ketersediaan layanan \textit{backend} FoodLAB dapat dijaga secara optimal sekaligus mengatasi \textit{knowledge gap} antar generasi tim pengembang.
 
 \section{PERANCANGAN SISTEM}
 
-Subbab ini menjelaskan perancangan teknis dari seluruh komponen pembentuk \textit{framework} ADMA, alur interaksi antarkomponen, serta desain detail masing-masing agen.
+Bagian ini menjelaskan perancangan teknis dari seluruh komponen pembentuk \textit{framework} ADMA, alur interaksi antarkomponen, serta desain detail masing-masing agen.
 
 \subsection{Arsitektur \textit{High-Level} Sistem ADMA}
 
@@ -47,13 +49,14 @@ Arsitektur \textit{high-level} ADMA dirancang untuk memisahkan tanggung jawab an
 Sistem terdiri dari tiga entitas utama yang saling berinteraksi secara asinkron:
 \begin{enumerate}[label=\arabic*., leftmargin=*]
   \item \textbf{Go \textit{Binary} (\textit{Agent})}\\
-  Berjalan secara lokal pada setiap \textit{server} target yang menjalankan \textit{backend} FoodLAB. Bertanggung jawab mengumpulkan data telemetri, mengeksekusi instruksi dari \textit{control plane}, dan menjalankan perintah lokal untuk diagnosis awal.
-  
+        Berjalan secara lokal pada setiap \textit{server} target yang menjalankan \textit{backend} FoodLAB. Bertanggung jawab mengumpulkan data telemetri, mengeksekusi instruksi dari \textit{control plane}, dan menjalankan perintah lokal untuk diagnosis awal.
+
   \item \textbf{NATS \textit{Message Broker}}\\
-  Menyediakan saluran komunikasi asinkron berkinerja tinggi antara \textit{Agent} dan \textit{Control Plane}. NATS memfasilitasi pengiriman metrik secara \textit{publish-subscribe} dan pengiriman instruksi secara \textit{request-reply} menggunakan model pengiriman \textit{at-most-once}. Kehilangan pesan akibat gangguan koneksi sementara dimitigasi di level aplikasi melalui mekanisme \textit{re-handshake} \cite{ibrahim2026nats}.
-  
+        Menyediakan saluran komunikasi asinkron berkinerja tinggi antara \textit{Agent} dan \textit{Control Plane}. NATS memfasilitasi pengiriman metrik secara \textit{publish-subscribe} dan pengiriman instruksi secara \textit{request-reply} menggunakan model pengiriman \textit{at-most-once}. Kehilangan pesan akibat gangguan koneksi sementara dimitigasi di level aplikasi melalui mekanisme \textit{re-handshake} \cite{ibrahim2026nats}.
+
+  \pagebreak
   \item \textbf{C\# \textit{Control Plane} (\textit{Backend})}\\
-  Pusat pengendali terpusat yang mengelola siklus hidup agen, mengkoordinasikan alur investigasi anomali, melakukan panggilan ke API LLM untuk \textit{reasoning}, dan menyediakan REST API untuk \textit{dashboard} \textit{frontend}.
+        Pusat pengendali terpusat yang mengelola siklus hidup agen, mengkoordinasikan alur investigasi anomali, melakukan panggilan ke API LLM untuk \textit{reasoning}, dan menyediakan REST API untuk \textit{dashboard} \textit{frontend}.
 \end{enumerate}
 
 \subsection{Alur \textit{Handshake} dan \textit{Bootstrap Agent}}
@@ -70,7 +73,7 @@ Sebelum agen dapat mengirimkan data telemetri ke \textit{control plane}, harus d
 Langkah-langkah pada alur \textit{bootstrap} adalah sebagai berikut:
 \begin{enumerate}[label=\arabic*., leftmargin=*]
   \item Agen mengirimkan pesan registrasi (\texttt{RegisterAgentRequest}) yang memuat identitas \textit{host}, alamat IP, sistem operasi, serta daftar \textit{container} yang terpasang melalui \textit{subject} \texttt{adma.registration}.
-  \item \textit{Control plane} menerima \textit{request} tersebut, memverifikasi konfigurasi agen, menyimpan informasi agen ke \textit{database} PostgreSQL, dan menghasilkan JWT (JSON Web Token) dengan \textit{scope} terbatas sebagai \textit{token} otorisasi.
+  \item \textit{Control plane} menerima \textit{request} tersebut, memverifikasi konfigurasi agen, menyimpan informasi agen ke \textit{database} PostgreSQL, dan menghasilkan JWT dengan \textit{scope} terbatas sebagai \textit{token} otorisasi.
   \item \textit{Control plane} mengirimkan respons (\texttt{RegisterAgentResponse}) berisi \textit{token} otorisasi dan konfigurasi pemantauan (seperti interval \textit{scraping} metrik dan pola ekspresi reguler untuk pemindaian \textit{log}) ke agen.
   \item Setelah menerima respons sukses, agen memasuki status aktif (\texttt{Active}) dan memulai \textit{routine} \textit{worker} untuk pemantauan.
 \end{enumerate}
@@ -89,13 +92,13 @@ Langkah-langkah pada alur \textit{bootstrap} adalah sebagai berikut:
 Tiga tipe \textit{Perception Agent} utama didefinisikan sebagai berikut:
 \begin{enumerate}[label=\arabic*., leftmargin=*]
   \item \textbf{Metric \textit{Perception Agent} (MPA)}\\
-  Terhubung ke \textit{database} PostgreSQL menggunakan \textit{library} \textit{driver} \texttt{sql} dan mengeksekusi kueri ke \textit{view} sistem \texttt{pg\_stat\_activity} pada interval yang ditentukan (\textit{default}: 5 detik). MPA menyaring dan melaporkan koneksi aktif yang memiliki durasi eksekusi kueri melebihi ambang batas waktu tertentu (\textit{slow queries}) serta \textit{query locking}. MPA dirancang khusus untuk \textit{database} PostgreSQL; evaluasi ADMA dilakukan pada lingkungan \textit{staging} yang menggunakan PostgreSQL sebagai target pemantauan \textit{database}.
-  
+        Terhubung ke \textit{database} PostgreSQL menggunakan \textit{library} \textit{driver} \texttt{sql} dan mengeksekusi kueri ke \textit{view} sistem \texttt{pg\_stat\_activity} pada interval yang ditentukan (\textit{default}: 5 detik). MPA menyaring dan melaporkan koneksi aktif yang memiliki durasi eksekusi kueri melebihi ambang batas waktu tertentu (\textit{slow queries}) serta \textit{query locking}. MPA dirancang khusus untuk \textit{database} PostgreSQL; evaluasi ADMA dilakukan pada lingkungan \textit{staging} yang menggunakan PostgreSQL sebagai target pemantauan \textit{database}.
+
   \item \textbf{Log \textit{Perception Agent} (LPA)}\\
-  Menggunakan Docker SDK untuk membuat \textit{stream} \textit{log} yang berkelanjutan dari \textit{container} \textit{backend} yang dipantau. LPA memindai setiap baris \textit{log} baru menggunakan pustaka ekspresi reguler (\textit{regex}) untuk mendeteksi kata kunci \textit{error} (seperti ``Exception'', ``Fatal'', ``Error'', ``Timeout''). Ketika kecocokan ditemukan, LPA mengemas \textit{log} tersebut beserta \textit{metadata} \textit{container} (nama \textit{container}, ID, \textit{timestamp}) ke dalam \textit{log} \textit{event} terstruktur.
-  
+        Menggunakan Docker SDK untuk membuat \textit{stream} \textit{log} yang berkelanjutan dari \textit{container} \textit{backend} yang dipantau. LPA memindai setiap baris \textit{log} baru menggunakan pustaka ekspresi reguler (\textit{regex}) untuk mendeteksi kata kunci \textit{error} (seperti ``Exception'', ``Fatal'', ``Error'', ``Timeout''). Ketika kecocokan ditemukan, LPA mengemas \textit{log} tersebut beserta \textit{metadata} \textit{container} (nama \textit{container}, ID, \textit{timestamp}) ke dalam \textit{log} \textit{event} terstruktur.
+
   \item \textbf{\textit{System Resource Agent} (SRA)}\\
-  Memantau penggunaan \textit{resource} fisik pada level \textit{host} dan \textit{container} menggunakan \texttt{gopsutil} dan \textit{Docker Stats API}. SRA melacak utilisasi CPU (dalam persen), konsumsi memori (dalam \textit{byte}), utilisasi penyimpanan (\textit{disk} I/O), dan status \textit{network interface}.
+        Memantau penggunaan \textit{resource} fisik pada level \textit{host} dan \textit{container} menggunakan \texttt{gopsutil} dan \textit{Docker Stats API}. SRA melacak utilisasi CPU (dalam persen), konsumsi memori (dalam \textit{byte}), utilisasi penyimpanan (\textit{disk} I/O), dan status \textit{network interface}.
 \end{enumerate}
 
 \subsection{Alur Kerja \textit{Reasoning Engine} (RCA \textit{Pipeline})}
@@ -104,7 +107,7 @@ Tiga tipe \textit{Perception Agent} utama didefinisikan sebagai berikut:
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.85\textwidth]{assets/adma-3.4.png}
+  \includegraphics[width=0.80\textwidth]{assets/adma-3.4.png}
   \caption{Alur Kerja \textit{Reasoning Engine} (RCA \textit{Pipeline})}
   \label{fig:alur_reasoning}
 \end{figure}
@@ -112,23 +115,27 @@ Tiga tipe \textit{Perception Agent} utama didefinisikan sebagai berikut:
 RCA \textit{Pipeline} memproses data anomali melalui empat tahapan utama:
 \begin{enumerate}[label=\arabic*., leftmargin=*]
   \item \textbf{\textit{Alert Correlator} dan \textit{Pre-Filter}}\\
-  Menerima aliran data telemetri dari agen melalui \textit{sub-agent} NATS. \textit{Alert Correlator} mengelompokkan \textit{event} yang terjadi pada jendela waktu yang sama (\textit{default}: 30 detik) dan komponen yang berhubungan. \textit{Pre-Filter} menyaring anomali berdasarkan aturan deterministik (seperti \textit{threshold} CPU $>$ 90\% atau kemunculan \textit{log} kritis) untuk menentukan apakah diperlukan analisis LLM tingkat lanjut. Hanya \textit{subset} \textit{tool} yang relevan (maksimum 8 dari lebih dari 40 \textit{tool} investigasi yang tersedia) yang diteruskan ke LLM \textit{Planner}, sehingga secara desain berpotensi menekan konsumsi \textit{token} dibanding \textit{filter} manual.
-  
+        Menerima aliran data telemetri dari agen melalui \textit{sub-agent} NATS. Sebagai gerbang awal yang hemat biaya, sistem memeriksa apakah seluruh sinyal dalam kelompok memiliki tingkat keparahan \textit{low}: jika ya, investigasi LLM dilewati sepenuhnya dan siklus berakhir untuk menghemat biaya pemanggilan model. Jika terdapat sinyal dengan tingkat keparahan \textit{medium} atau lebih tinggi, \textit{Alert Correlator} mengelompokkan \textit{event} yang terjadi pada jendela waktu yang sama (\textit{default}: 30 detik) dan komponen yang berhubungan. \textit{Pre-Filter} menyaring anomali berdasarkan aturan deterministik (seperti \textit{threshold} CPU $>$ 90\% atau kemunculan \textit{log} kritis) untuk menentukan apakah diperlukan analisis LLM tingkat lanjut. Hanya \textit{subset} \textit{tool} yang relevan (maksimum 8 dari lebih dari 40 \textit{tool} investigasi yang tersedia) yang diteruskan ke LLM \textit{Planner}, sehingga secara desain berpotensi menekan konsumsi \textit{token} dibandingkan skenario tanpa \textit{Pre-Filter} (seluruh \textit{tool} investigasi dikirim ke LLM).
+
+  Bobot pada masing-masing komponen skor korelasi (\texttt{TimeWindow} dan \texttt{TargetSimilarity} masing-masing 0,4; \texttt{SeverityEscalation} 0,2) ditentukan secara heuristik berdasarkan asumsi awal bahwa kedekatan waktu kemunculan sinyal dan kesamaan target (komponen/\textit{container} yang terdampak) merupakan indikator korelasi yang setara pentingnya, sedangkan eskalasi tingkat keparahan berperan sebagai faktor pendukung yang memperkuat keyakinan pengelompokan tanpa menjadi penentu utama. Ambang batas 0,6 dipilih sebagai titik tengah yang cukup ketat untuk menghindari pengelompokan sinyal yang tidak relevan, namun cukup longgar untuk menangkap insiden yang bermanifestasi pada gejala yang beragam. Nilai bobot dan ambang batas ini bersifat awal (\textit{default}) dan akan dievaluasi ulang berdasarkan hasil pengujian pada Bab IV.
+
+  Jumlah aturan penilaian (60+ \textit{rules}) pada \textit{Pre-Filter} disusun berdasarkan inventarisasi skenario anomali umum yang teridentifikasi dari observasi awal terhadap pola kegagalan pada \textit{backend} FoodLAB (mencakup kombinasi sinyal dari MPA, LPA, dan SRA), sehingga setiap kombinasi gejala memiliki aturan pemetaan ke kandidat \textit{tool} yang relevan. Batas maksimum 8 kandidat \textit{tool} (\texttt{MaxTools}) ditetapkan sebagai nilai \textit{default} untuk membatasi jumlah pilihan yang perlu dipertimbangkan LLM pada satu iterasi \textit{reasoning}, guna menjaga latensi dan biaya pemanggilan tetap terkendali. Kedua parameter ini bersifat dapat dikonfigurasi ulang dan akan dikalibrasi lebih lanjut berdasarkan hasil pengujian pada Bab IV.
+
   \item \textbf{\textit{Context Enrichment}}\\
-  Jika \textit{Pre-Filter} meloloskan insiden untuk diinvestigasi, \textit{control plane} mengirimkan \textit{request} ke agen target untuk mengumpulkan konteks tambahan. Konteks ini mencakup \textit{output} perintah diagnostik (seperti \texttt{df -h}, \texttt{free -m}, daftar proses teratas via \texttt{top}, atau \textit{snapshot} \textit{query} \textit{database} terakhir). Data \textit{enrichment} ini digabungkan dengan \textit{alert history} sebelumnya.
-  
+        Jika \textit{Pre-Filter} meloloskan insiden untuk diinvestigasi, \textit{control plane} mengirimkan \textit{request} ke agen target untuk mengumpulkan konteks tambahan. Konteks ini mencakup \textit{output} perintah diagnostik (seperti \texttt{df -h}, \texttt{free -m}, daftar proses teratas via \texttt{top}, atau \textit{snapshot} \textit{query} \textit{database} terakhir). Data \textit{enrichment} ini digabungkan dengan \textit{alert history} sebelumnya.
+
   \item \textbf{LLM \textit{Reasoning} (\textit{Chain of Thought})}\\
-  Data telemetri yang telah diperkaya dikemas ke dalam \textit{prompt} terstruktur. \textit{Prompt} ini dikirim ke API LLM (seperti Claude atau Gemini) menggunakan teknik \textit{Chain of Thought} (CoT). LLM diminta melakukan diagnosis bertahap: (a) mendeskripsikan gejala sistem, (b) mengidentifikasi akar penyebab yang paling mungkin, (c) menghitung tingkat keyakinan diagnosis (\texttt{ValidityScore} dari 0--100), dan (d) menyusun rekomendasi tindakan remediasi beserta estimasi risiko aksi. Setiap klaim yang dihasilkan LLM juga menyertakan sumber \textit{evidence} yang mendukungnya.
-  
+        Data telemetri yang telah diperkaya dikemas ke dalam \textit{prompt} terstruktur. \textit{Prompt} ini dikirim ke API LLM (seperti Claude atau Gemini) menggunakan teknik \textit{Chain of Thought} (CoT). LLM diminta melakukan diagnosis bertahap: (a) mendeskripsikan gejala sistem, (b) mengidentifikasi akar penyebab yang paling mungkin, (c) menghitung tingkat keyakinan diagnosis (\texttt{ValidityScore} dari 0,0--1,0), dan (d) menyusun rekomendasi tindakan remediasi beserta estimasi risiko aksi. Setiap klaim yang dihasilkan LLM juga menyertakan sumber \textit{evidence} yang mendukungnya.
+
   \item \textbf{\textit{Validity Verification}}\\
-  Hasil diagnosis LLM diverifikasi oleh modul \textit{Claim Validator} yang bekerja secara deterministik dan independen dari model bahasa. \textit{Claim Validator} memvalidasi setiap klaim LLM menggunakan dua mekanisme: (a) \textit{whitelist} berbasis \textit{tool} faktual yang terdiri dari sekitar 30 nama \textit{tool} yang menghasilkan data langsung dari sumbernya (Docker \textit{daemon}, \texttt{pg\_catalog}, \texttt{/proc} Linux, dan pemeriksaan jaringan langsung), dan (b) pencarian kata kunci sebagai \textit{fallback} untuk klaim yang tidak menyertakan sumber \textit{evidence} eksplisit. Sebuah klaim dianggap tervalidasi hanya jika sumbernya ada dalam \textit{whitelist} DAN \textit{tool} tersebut memang benar-benar telah dieksekusi selama siklus investigasi. Dengan demikian, \texttt{ValidityScore} mengukur keterlacakan klaim ke \textit{evidence} faktual yang terkumpul (\textit{evidence groundedness}), bukan penilaian mandiri oleh LLM terhadap hasilnya sendiri. Jika \texttt{ValidityScore} berada di atas ambang batas (\textit{default}: 70), rencana aksi dilanjutkan ke alur eksekusi; jika tidak, \textit{control plane} menginstruksikan agen untuk menjalankan perintah diagnostik yang lebih spesifik dan mengulang \textit{pipeline} investigasi.
+        Hasil diagnosis LLM diverifikasi oleh modul \textit{Claim Validator} yang bekerja secara deterministik dan independen dari model bahasa. \textit{Claim Validator} memvalidasi setiap klaim LLM menggunakan dua mekanisme: (a) \textit{whitelist} berbasis \textit{tool} faktual yang terdiri dari sekitar 30 nama \textit{tool} yang menghasilkan data langsung dari sumbernya (Docker \textit{daemon}, \texttt{pg\_catalog}, \texttt{/proc} Linux, dan pemeriksaan jaringan langsung), dan (b) pencarian kata kunci sebagai \textit{fallback} untuk klaim yang tidak menyertakan sumber \textit{evidence} eksplisit. Sebuah klaim dianggap tervalidasi hanya jika sumbernya ada dalam \textit{whitelist} DAN \textit{tool} tersebut memang benar-benar telah dieksekusi selama siklus investigasi. Dengan demikian, \texttt{ValidityScore} mengukur keterlacakan klaim ke \textit{evidence} faktual yang terkumpul (\textit{evidence groundedness}), bukan penilaian mandiri oleh LLM terhadap hasilnya sendiri. Jika \texttt{ValidityScore} berada di atas ambang batas (\textit{default}: 0,70), rencana aksi dilanjutkan ke alur eksekusi; jika tidak, \textit{control plane} menginstruksikan agen untuk menjalankan perintah diagnostik yang lebih spesifik melalui mode iteratif yang disebut \texttt{PlanHypotheses}. Pada mode ini, \textit{Reasoning Engine} memperlebar cakupan pengambilan \textit{log} dan menyusun ulang hipotesis \textit{root cause} berdasarkan bukti tambahan yang terkumpul, sebelum mengulang \textit{pipeline} investigasi mulai dari tahap \textit{Context Enrichment}. Apabila setelah 4 kali iterasi \texttt{ValidityScore} masih berada di bawah ambang batas, sistem tidak mengeksekusi aksi otomatis melainkan menandai diagnosis sebagai \textit{low-confidence} dan mengirimkan notifikasi eskalasi kepada operator melalui \textit{dashboard} dan Telegram untuk ditangani secara manual, guna mencegah eksekusi remediasi berdasarkan diagnosis yang belum cukup terverifikasi.
 \end{enumerate}
 
 Untuk mendukung fleksibilitas penyedia model, \textit{Reasoning Engine} dirancang dengan lapisan abstraksi klien LLM yang memungkinkan pergantian \textit{provider} tanpa mengubah logika \textit{pipeline} RCA di atasnya. Konfigurasi \textit{provider} aktif (Claude API sebagai \textit{default}, atau model lokal berbasis Qwen sebagai alternatif pada skenario keterbatasan \textit{resource} GPU atau kebutuhan privasi yang lebih ketat) dikelola melalui konfigurasi \texttt{LLMModel} pada \textit{client}, sehingga setiap tahap \textit{pipeline} (\textit{Alert Correlator}, \textit{Context Enrichment}, LLM \textit{Reasoning}, \textit{Validity Verification}) tetap berjalan identik terlepas dari \textit{provider} yang digunakan. Saat beroperasi dengan model lokal, konfigurasi \textit{Pre-Filter} (\texttt{PreFilterConfig.MaxTools}, \textit{default} 8) disesuaikan menjadi nilai yang lebih rendah untuk mengimbangi kemampuan \textit{tool-calling} yang lebih terbatas dibandingkan Claude API.
 
 \subsection{\textit{Clean Architecture} \textit{Backend} ADMA}
 
-\textit{Backend Control Plane} dibangun dengan mengikuti prinsip \textit{Clean Architecture} untuk memastikan kode terstruktur, modular, dan mudah diuji secara independen dari \textit{framework} web maupun \textit{database}. Pembagian \textit{layer} ditunjukkan pada Gambar~\ref{fig:clean_architecture}.
+\textit{Backend Control Plane} dibangun dengan mengikuti prinsip \textit{Clean Architecture} untuk memastikan kode terstruktur, modular, dan mudah diuji secara independen dari \textit{framework} web maupun \textit{database}.
 
 \begin{figure}[H]
   \centering
@@ -137,20 +144,25 @@ Untuk mendukung fleksibilitas penyedia model, \textit{Reasoning Engine} dirancan
   \label{fig:clean_architecture}
 \end{figure}
 
-Desain \textit{layer} \textit{backend} ADMA \cite{valiveti2025evolution} terdiri dari:
+Gambar~\ref{fig:clean_architecture} menggambarkan empat lapisan \textit{Clean Architecture} pada \textit{backend} ADMA: \textit{Domain Layer} berisi \textit{entity} inti, \textit{Application Layer} mengandung \textit{business logic}, \textit{Infrastructure Layer} mengimplementasikan detail teknis akses data dan \textit{messaging}, serta \textit{API Layer} menyediakan \textit{endpoint} REST dan SignalR untuk \textit{dashboard}.
+
+Desain \textit{layer} \textit{backend} ADMA, mengikuti prinsip \textit{Clean Architecture} \cite{martin2017clean} dan strategi implementasi ASP.NET Core \cite{valiveti2025evolution}, terdiri dari:
 \begin{enumerate}[label=\arabic*., leftmargin=*]
   \item \textbf{\textit{Domain Layer}}\\
-  Berisi entitas bisnis inti (seperti \texttt{Agent}, \texttt{Incident}, \texttt{RemediationAction}, \texttt{AuditLog}), \textit{value objects}, \textit{domain events}, dan antarmuka \textit{repository}. \textit{Layer} ini tidak memiliki dependensi ke \textit{library} atau \textit{framework} eksternal apa pun.
-  
+        Berisi entitas bisnis inti (seperti \texttt{Agent}, \texttt{Incident}, \texttt{RemediationAction}, \texttt{AuditLog}), \textit{value objects}, \textit{domain events}, dan antarmuka \textit{repository}. \textit{Layer} ini tidak memiliki dependensi ke \textit{library} atau \textit{framework} eksternal apa pun.
+
   \item \textbf{\textit{Application Layer}}\\
-  Berisi logika bisnis utama dan \textit{use case} aplikasi (seperti \texttt{RegisterAgentCommandHandler}, \texttt{AnalyzeIncidentQueryHandler}, \texttt{ExecuteRemediationJob}). \textit{Layer} ini mendefinisikan DTO (\textit{Data Transfer Objects}) dan hanya bergantung pada \textit{Domain Layer}.
-  
+        Berisi logika bisnis utama dan \textit{use case} aplikasi (seperti \texttt{RegisterAgentCommandHandler}, \texttt{AnalyzeIncidentQueryHandler}, \texttt{ExecuteRemediationJob}). \textit{Layer} ini mendefinisikan DTO (\textit{Data Transfer Objects}) dan hanya bergantung pada \textit{Domain Layer}.
+
   \item \textbf{\textit{Infrastructure Layer}}\\
-  Mengimplementasikan antarmuka yang didefinisikan di \textit{layer} Domain dan Application. \textit{Layer} ini mengintegrasikan Entity Framework Core untuk akses PostgreSQL, \texttt{NATS.Net} untuk komunikasi NATS, \texttt{AdmaNatsService} sebagai \textit{background service} yang terus mendengarkan pesan dari agen, serta \textit{client} API untuk integrasi ke \textit{Large Language Models} (LLM).
-  
+        Mengimplementasikan antarmuka yang didefinisikan di \textit{layer} Domain dan Application. \textit{Layer} ini mengintegrasikan Entity Framework Core untuk akses PostgreSQL, \texttt{NATS.Net} untuk komunikasi NATS, \texttt{AdmaNatsService} sebagai \textit{background service} yang terus mendengarkan pesan dari agen, serta \textit{client} API untuk integrasi ke \textit{Large Language Models} (LLM).
+
   \item \textbf{API (Presentation) \textit{Layer}}\\
-  Sebagai \textit{entry point} eksternal, mengimplementasikan ASP.NET Core Web API \textit{controller} untuk mengekspos REST API dan SignalR \textit{Hub} untuk \textit{push update} data ke \textit{frontend} \textit{dashboard}.
+        Sebagai \textit{entry point} eksternal, mengimplementasikan ASP.NET Core Web API \textit{controller} untuk mengekspos REST API dan SignalR \textit{Hub} untuk \textit{push update} data ke \textit{frontend} \textit{dashboard}.
 \end{enumerate}
+
+Penerapan \textit{Clean Architecture} memastikan \textit{business logic} terisolasi dari detail infrastruktur. Penggantian komponen seperti \textit{provider} LLM atau \textit{database engine} cukup dilakukan pada \textit{Infrastructure Layer} tanpa menyentuh \textit{Application Layer}, dan struktur modular ini memfasilitasi \textit{unit testing} secara independen pada setiap lapisan.
+
 
 \subsection{Alur Deteksi Anomali dan \textit{Self-Healing}}
 
@@ -158,7 +170,7 @@ Integrasi antara modul deteksi anomali di sisi agen, alur \textit{reasoning} di 
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.85\textwidth]{assets/adma-3.6.png}
+  \includegraphics[width=0.73\textwidth]{assets/adma-3.6.png}
   \caption{Alur Deteksi Anomali dan \textit{Self-Healing}}
   \label{fig:alur_self_healing}
 \end{figure}
@@ -173,13 +185,17 @@ Alur tersebut terdiri dari urutan proses berikut:
   \item \textbf{\textit{Verification}}: Agen mengeksekusi perintah tersebut, memverifikasi status \textit{container} kembali menjadi \texttt{Running}, dan memantau metrik koneksi \textit{database} selama 60 detik. Setelah memastikan sistem stabil, status \textit{incident} diperbarui menjadi \texttt{Resolved}.
 \end{enumerate}
 
+Seluruh alur eksekusi dikendalikan oleh \textit{Safety Gate} yang mengklasifikasikan setiap kandidat aksi ke dalam tiga keputusan: \texttt{QUEUE\_AUTO\_EXEC} untuk risiko LOW (dieksekusi langsung tanpa persetujuan), \texttt{NOTIFY\_AND\_WAIT} untuk risiko MEDIUM (menunggu persetujuan operator melalui \textit{dashboard}), dan \texttt{BLOCK\_AND\_ESCALATE} untuk risiko HIGH (diblok sepenuhnya dengan eskalasi notifikasi). Sebagai lapisan keamanan tambahan, \textit{DockerExecutor} pada Go \textit{binary} melakukan pemeriksaan risiko ulang secara independen sebelum mengeksekusi perintah, sehingga aksi berisiko tinggi tidak dapat lolos meskipun terjadi kesalahan logika di \textit{control plane}. Setelah eksekusi berhasil, sistem menjalankan mekanisme \textit{retry} dengan \textit{exponential backoff} (1 detik, 2 detik, 4 detik) dan memverifikasi kondisi \textit{container} secara periodik setiap 3 detik hingga status \texttt{Running} terkonfirmasi. Seluruh hasil eksekusi, termasuk kondisi sistem sebelum dan sesudah tindakan (\texttt{state\_before} dan \texttt{state\_after}), dipublikasikan kembali ke \textit{control plane} melalui NATS untuk dicatat di \textit{audit trail}.
+
+Untuk mencegah \textit{feedback loop} akibat sinyal anomali yang masih muncul sesaat setelah tindakan remediasi dieksekusi, \textit{Scanner} menerapkan mekanisme \textit{post-execution cooldown} selama 3 menit per \textit{container}. Selama periode \textit{cooldown}, kandidat aksi baru untuk \textit{container} yang sama tidak akan dieksekusi melainkan dikembalikan ke \textit{queue} untuk dicoba pada siklus pemindaian berikutnya, kecuali \textit{container} tersebut terdeteksi \textit{crash} kembali sebelum \textit{cooldown} berakhir. Selain itu, mekanisme \textit{per-container lock} memastikan hanya satu eksekusi yang berjalan pada \textit{container} yang sama dalam satu waktu, mencegah \textit{race condition} ketika aksi risiko LOW sedang berjalan dan operator menyetujui aksi risiko MEDIUM sebelum eksekusi pertama selesai. Kandidat dalam \textit{queue} juga dilindungi oleh mekanisme deduplication sehingga satu \textit{incident} hanya memiliki satu kandidat aktif per tingkat risiko, dengan kapasitas \textit{queue} maksimum 50 entri. Pada skenario Go \textit{binary} yang mengalami \textit{restart}, kandidat yang sebelumnya masih berstatus \textit{pending} di \textit{control plane} secara otomatis diinjeksikan kembali ke \textit{queue} melalui mekanisme \textit{restart recovery} saat proses \textit{handshake} ulang berlangsung.
+
 \subsection{Alur Kerja \textit{Code Fix Agent}}
 
 Apabila \textit{Reasoning Engine} mendiagnosa bahwa akar penyebab anomali berasal dari \textit{bug} di level kode sumber aplikasi (misalnya kegagalan penanganan \textit{null value}, \textit{syntax error} pada \textit{query} \textit{database}, atau kebocoran memori pada \textit{class} tertentu), sistem mengaktifkan \textit{sub-flow} \textit{Code Fix Agent}. Alur kerja \textit{Code Fix Agent} ditunjukkan pada Gambar~\ref{fig:alur_code_fix}.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.85\textwidth]{assets/adma-3.7.png}
+  \includegraphics[width=0.95\textwidth]{assets/adma-3.7.png}
   \caption{Alur Kerja \textit{Code Fix Agent}}
   \label{fig:alur_code_fix}
 \end{figure}
@@ -207,7 +223,7 @@ Mekanisme kerja \textit{Code Fix Agent} dirancang sebagai berikut:
 Desain antarmuka \textit{dashboard} memiliki beberapa bagian utama:
 \begin{enumerate}[label=\arabic*., leftmargin=*]
   \item \textbf{\textit{Navigation Bar}}: Menu navigasi untuk beralih antara halaman \textit{Dashboard} utama, \textit{Agent List}, \textit{Incident Log}, \textit{Remediation History}, dan \textit{Settings}.
-  \item \textbf{\textit{System Status Metrics}}: Menampilkan indikator performa utama (KPI) secara \textit{real-time} seperti total \textit{Active Agents}, CPU/Memory \textit{Host}, rata-rata MTTR, dan jumlah \textit{incident} dengan status \textit{active}.
+  \item \textbf{\textit{System Status Metrics}}: Menampilkan indikator performa utama (KPI/\textit{Key Performance Indicator}) secara \textit{real-time} seperti total \textit{Active Agents}, CPU/Memory \textit{Host}, rata-rata MTTR, dan jumlah \textit{incident} dengan status \textit{active}.
   \item \textbf{\textit{Agent Status Grid}}: Kartu visual untuk setiap agen yang terdaftar. Menampilkan status koneksi agen (\textit{Online}/\textit{Offline}), versi \textit{agent}, utilisasi CPU/Memory \textit{container} utama, dan status kesehatan \textit{container}.
   \item \textbf{\textit{Real-time Incident Alert Panel}}: Panel samping yang menampilkan daftar \textit{incident} yang sedang aktif. Panel ini menampilkan status \textit{severity} (Low, Medium, High, Critical) dengan animasi berdenyut untuk menarik perhatian operator. Mengklik kartu \textit{incident} akan membuka \textit{modal} detail yang berisi: (a) diagnosis akar masalah hasil \textit{reasoning} LLM, (b) data telemetri pendukung (\textit{error log snippet} dan grafik metrik), dan (c) rencana aksi remediasi yang diusulkan beserta tombol persetujuan (\texttt{Approve/Reject}).
   \item \textbf{\textit{Audit Trail Log}}: Menampilkan riwayat \textit{log} aktivitas yang komprehensif, mencatat setiap deteksi anomali, panggilan LLM, persetujuan operator, dan hasil eksekusi tindakan remediasi untuk kebutuhan audit kepatuhan sistem.
@@ -221,16 +237,16 @@ Terdapat dua batasan teknis utama yang perlu dipahami dalam penerapan \textit{fr
 
 Pertama, cakupan pemantauan \textit{database} oleh \textit{Metric Perception Agent} (MPA) bersifat eksklusif untuk PostgreSQL. Seluruh \textit{tool} investigasi \textit{database} yang dimiliki MPA, seperti pemantauan \texttt{pg\_stat\_activity}, deteksi \textit{slow query}, analisis \textit{lock contention}, dan pemeriksaan koneksi aktif, bergantung pada \textit{view} sistem internal PostgreSQL yang tidak tersedia pada MySQL. Oleh karena itu, evaluasi ADMA dalam penelitian ini dilakukan pada lingkungan \textit{staging} yang menggunakan PostgreSQL sebagai \textit{backend} \textit{database}, yakni infrastruktur FoodLAB generasi baru berbasis ASP.NET Core yang sedang dalam proses pengembangan. Komponen FoodLAB yang masih berjalan di atas MySQL (basis kode Laravel lama) berada di luar cakupan pemantauan MPA, meskipun \textit{Log Perception Agent} (LPA) dan \textit{System Resource Agent} (SRA) tetap dapat memantau \textit{container} dan \textit{resource} \textit{host} secara \textit{database-agnostic}. Keterbatasan ini dicatat sebagai salah satu area kerja lanjutan apabila diperlukan dukungan pemantauan MySQL di masa mendatang \cite{salunke2024performance}.
 
-Kedua, \textit{framework} ADMA mengirimkan sebagian data operasional infrastruktur ke layanan API LLM pihak ketiga (Claude API oleh Anthropic) untuk keperluan analisis \textit{root cause}. Data yang berpotensi dikirim ke luar perimeter jaringan kampus mencakup: cuplikan \textit{log} \textit{container} yang mungkin memuat detail \textit{request} dan pesan \textit{error} aplikasi, \textit{query} \textit{database} yang sedang berjalan yang berpotensi mengandung data operasional dalam klausul parameternya, serta cuplikan kode sumber yang diidentifikasi memiliki \textit{bug} untuk keperluan \textit{Code Fix Agent}. Perlu ditegaskan bahwa data yang dikirim merupakan data operasional teknis (\textit{log}, \textit{query}, dan kode sumber), bukan data pribadi pengguna aplikasi (seperti nama, NIM, atau informasi akun). Sebagai mitigasi yang sudah tersedia dalam desain sistem, mekanisme \texttt{IsSensitiveFile} secara otomatis mengecualikan file yang berisi kredensial dan konfigurasi sensitif (seperti \texttt{.env} dan file konfigurasi autentikasi) dari proses \textit{Code Fix Agent}, sehingga risiko pengiriman kredensial mentah ke API eksternal sudah diminimalkan. Mitigasi utama untuk data \textit{log} dan \textit{query} bertumpu pada kebijakan penggunaan data dari penyedia LLM, di mana data yang dikirim melalui jalur API komersial umumnya tidak digunakan untuk melatih ulang model. Sebagai catatan batasan dan rekomendasi kerja lanjutan, penerapan mekanisme redaksi atau \textit{masking} data sensitif pada konten \textit{log} dan \textit{query} sebelum dikirim ke LLM dapat dieksplorasi untuk memenuhi persyaratan kebijakan data yang lebih ketat di lingkungan kampus.
+Kedua, \textit{framework} ADMA mengirimkan sebagian data operasional infrastruktur ke layanan API LLM pihak ketiga (Claude API oleh Anthropic) untuk keperluan analisis \textit{root cause}. Data yang berpotensi dikirim ke luar perimeter jaringan kampus mencakup: cuplikan \textit{log} \textit{container} yang mungkin memuat detail \textit{request} dan pesan \textit{error} aplikasi, \textit{query} \textit{database} yang sedang berjalan yang berpotensi mengandung data operasional dalam klausul parameternya, serta cuplikan kode sumber yang diidentifikasi memiliki \textit{bug} untuk keperluan \textit{Code Fix Agent}. Perlu ditegaskan bahwa data yang dikirim merupakan data operasional teknis (\textit{log}, \textit{query}, dan kode sumber), bukan data pribadi pengguna aplikasi (seperti nama, NIM, atau informasi akun). Sebagai mitigasi yang sudah tersedia dalam desain sistem, mekanisme \texttt{IsSensitiveFile} secara otomatis mengecualikan file yang berisi kredensial dan konfigurasi sensitif (seperti \texttt{.env} dan file konfigurasi autentikasi) dari proses \textit{Code Fix Agent}, sehingga risiko pengiriman kredensial mentah ke API eksternal sudah diminimalkan. Mitigasi utama untuk data \textit{log} dan \textit{query} bertumpu pada kebijakan penggunaan data dari penyedia LLM; data yang dikirim melalui jalur API komersial umumnya tidak digunakan untuk melatih ulang model. Sebagai catatan batasan dan rekomendasi kerja lanjutan, penerapan mekanisme redaksi atau \textit{masking} data sensitif pada konten \textit{log} dan \textit{query} sebelum dikirim ke LLM dapat dieksplorasi untuk memenuhi persyaratan kebijakan data yang lebih ketat di lingkungan kampus.
 
 \subsection{Rencana Metrik Evaluasi}
 
-Untuk mengukur keberhasilan implementasi \textit{framework} ADMA secara kuantitatif, Bab 4 akan menggunakan metrik-metrik evaluasi berikut.
+Untuk mengukur keberhasilan implementasi \textit{framework} ADMA secara kuantitatif, Bab IV akan menggunakan metrik-metrik evaluasi berikut.
 
 \begin{enumerate}[label=\arabic*., leftmargin=*]
   \item \textbf{Efektivitas Deteksi Anomali}: Jumlah insiden yang berhasil terdeteksi oleh sistem dibandingkan dengan total insiden yang disimulasikan pada skenario pengujian. Metrik ini mengukur kemampuan \textit{Perception Layer} dalam menangkap sinyal anomali dari PostgreSQL, Docker \textit{logs}, dan \textit{resource} \textit{host}.
 
-  \item \textbf{Akurasi \textit{Root Cause Analysis}}: Persentase skenario insiden di mana LLM \textit{Reasoning Engine} berhasil mengidentifikasi akar penyebab yang benar sesuai skenario yang sudah diketahui jawabannya. Dievaluasi bersamaan dengan nilai \texttt{ValidityScore} rata-rata yang dihasilkan pada tiap siklus investigasi.
+  \item \textbf{Akurasi \textit{Root Cause Analysis}}: Persentase skenario insiden yang berhasil diidentifikasi akar penyebabnya secara tepat oleh LLM \textit{Reasoning Engine}, sesuai skenario yang sudah diketahui jawabannya. Dievaluasi bersamaan dengan nilai \texttt{ValidityScore} rata-rata yang dihasilkan pada tiap siklus investigasi.
 
   \item \textbf{Efisiensi \textit{Pre-Filter} terhadap Konsumsi \textit{Token} LLM}: Pengukuran langsung jumlah \textit{token} \textit{input} yang dikirim ke Claude API per siklus investigasi, dibandingkan antara kondisi \textit{Pre-Filter} aktif (maksimum 8 \textit{tool}) dan kondisi hipotetis tanpa \textit{Pre-Filter} (seluruh \textit{tool registry} dikirim). Pengukuran dilakukan dengan mencatat nilai \texttt{usage.input\_tokens} dan \texttt{usage.output\_tokens} dari setiap respons API Claude selama sesi pengujian. Estimasi penghematan biaya dihitung berdasarkan tarif API yang berlaku saat pengujian dilaksanakan.
 
@@ -241,7 +257,7 @@ Untuk mengukur keberhasilan implementasi \textit{framework} ADMA secara kuantita
 
 \section{SKENARIO UJI COBA}
 
-Skenario uji coba disusun untuk memastikan bahwa implementasi \textit{framework} \textit{Agentic DevOps Monitoring Agents} (ADMA) pada infrastruktur \textit{backend} aplikasi FoodLAB benar-benar mampu meningkatkan \textit{observability} dan kemampuan \textit{self-healing} sesuai dengan tujuan yang telah ditetapkan. Skenario ini mencakup pengujian fungsionalitas sistem \textit{end-to-end}, pengujian kemampuan deteksi anomali dan \textit{reasoning} berbasis LLM, pengujian mekanisme \textit{self-healing} dan eksekusi aksi, serta pengujian integrasi komponen melalui \textit{messaging} NATS (NATS Core, model \textit{publish-subscribe} dan \textit{request-reply}, bukan JetStream). Seluruh aspek diuji untuk memastikan sistem beroperasi sesuai desain tanpa mengganggu ketersediaan layanan FoodLAB yang sedang berjalan.
+Skenario pengujian pada bagian ini disusun untuk memverifikasi bahwa setiap rumusan masalah yang telah diuraikan sebelumnya, mencakup keterlambatan deteksi anomali, ketiadaan \textit{root cause analysis} otomatis, tidak efisiennya \textit{reasoning} LLM tanpa penyaringan sinyal, serta ketiadaan mekanisme perbaikan kode otomatis, telah terselesaikan oleh komponen-komponen ADMA yang dirancang. Skenario ini mencakup pengujian fungsionalitas sistem \textit{end-to-end}, pengujian kemampuan deteksi anomali dan \textit{reasoning} berbasis LLM, pengujian mekanisme \textit{self-healing} dan eksekusi aksi, serta pengujian integrasi komponen melalui \textit{messaging} NATS (NATS Core, model \textit{publish-subscribe} dan \textit{request-reply}, bukan JetStream). Seluruh aspek diuji untuk memastikan sistem beroperasi sesuai desain tanpa mengganggu ketersediaan layanan FoodLAB yang sedang berjalan.
 
 \subsection{Uji Fungsionalitas \textit{End-to-End} Sistem ADMA}
 
@@ -297,7 +313,7 @@ Uji ini memverifikasi bahwa \textit{Action Executor} mampu mengeksekusi tindakan
 Uji ini memverifikasi bahwa \textit{Code Fix Agent} mampu mengidentifikasi masalah pada level kode sumber dari hasil RCA \textit{Pipeline} dan mengusulkan perbaikan secara otomatis melalui \textit{merge request} di GitLab. Pengujian mencakup:
 
 \begin{enumerate}[label=\arabic*., leftmargin=*]
-  \item Mensimulasikan skenario di mana LPA mendeteksi \textit{stack trace} dari \textit{container} \texttt{foodlab-app} (ASP.NET Core) yang mereferensikan file dan nomor baris kode sumber, kemudian memastikan LLM dalam RCA \textit{Pipeline} menyimpulkan bahwa \textit{root cause} berasal dari kode aplikasi.
+  \item Mensimulasikan skenario ketika LPA mendeteksi \textit{stack trace} dari \textit{container} \texttt{foodlab-app} (ASP.NET Core) yang mereferensikan file dan nomor baris kode sumber, kemudian memastikan LLM dalam RCA \textit{Pipeline} menyimpulkan bahwa \textit{root cause} berasal dari kode aplikasi.
   \item Memverifikasi bahwa \textit{Code Fix Agent} berhasil mengakses GitLab \textit{Tree} API untuk menemukan struktur direktori \textit{repository} dan GitLab \textit{File Content} API untuk mengambil konten file yang bermasalah, menggunakan GitLab Personal Access \textit{Token} yang terdistribusi melalui mekanisme \textit{handshake}.
   \item Memastikan LLM berhasil menghasilkan \textit{patch} perbaikan minimal yang menyelesaikan masalah tanpa merusak fungsionalitas lain, disertai penjelasan terstruktur mengenai \textit{root cause} dan alasan perubahan yang diusulkan.
   \item Memvalidasi bahwa \textit{Code Fix Agent} berhasil membuat \textit{branch} baru dengan format penamaan \texttt{fix/adma-\{\textit{incident}\_id\}-\{slug\}}, melakukan \textit{commit} \textit{patch}, dan membuat \textit{merge request} secara otomatis dengan deskripsi yang mencakup ringkasan masalah, \textit{root cause}, penjelasan \textit{patch}, dan tautan ke \textit{incident} di ADMA \textit{dashboard}.
@@ -393,22 +409,22 @@ Kedua kondisi diuji pada skenario insiden yang identik (\textit{seed} yang sama,
 \begin{enumerate}[label=\arabic*., leftmargin=*]
   \item Untuk setiap skenario uji, catat nilai \texttt{usage.input\_tokens} dan \texttt{usage.output\_tokens} dari respons Claude API pada Kondisi A dan Kondisi B.
   \item Hitung persentase penghematan \textit{token} menggunakan rumus:
-  \begin{equation}
-    \text{Penghematan (\%)} = \frac{\text{Token}_{baseline} - \text{Token}_{filtered}}{\text{Token}_{baseline}} \times 100\%
-  \end{equation}
+        \begin{equation}
+          \text{Penghematan (\%)} = \frac{\text{Token}_{baseline} - \text{Token}_{filtered}}{\text{Token}_{baseline}} \times 100\%
+        \end{equation}
   \item Hitung estimasi penghematan biaya dengan mengalikan selisih \textit{token} dengan tarif per-\textit{token} API Claude yang berlaku saat pengujian dilaksanakan.
-  \item Pengujian dilakukan pada $N = 12$ skenario anomali berbeda (mencakup kombinasi anomali PostgreSQL, Docker \textit{log}, dan \textit{resource} sistem, sejalan dengan skenario pada 3.3.2 dan 3.3.3) untuk memperoleh rata-rata dan standar deviasi penghematan \textit{token}, bukan dari satu sampel tunggal.
+  \item Pengujian dilakukan pada $N = 12$ skenario anomali berbeda, mencakup kombinasi anomali PostgreSQL, Docker \textit{log}, dan \textit{resource} sistem yang sejalan dengan skenario pengujian deteksi anomali dan \textit{reasoning} yang telah diuraikan sebelumnya, untuk memperoleh rata-rata dan standar deviasi penghematan \textit{token}, bukan dari satu sampel tunggal.
   \item Hasil dilaporkan dalam bentuk rata-rata $\pm$ standar deviasi persentase penghematan \textit{token}, serta estimasi total penghematan biaya per bulan berdasarkan proyeksi volume insiden rata-rata pada infrastruktur FoodLAB.
 \end{enumerate}
 
-Evaluasi ini sejajar dengan evaluasi deteksi anomali (3.4.1), \textit{root cause analysis} (3.4.2), dan \textit{self-healing} (3.4.3), dan secara langsung memverifikasi klaim efisiensi biaya yang menjadi salah satu motivasi desain arsitektur berlapis pada 2.2.7.
+Evaluasi ini sejajar dengan evaluasi deteksi anomali, \textit{root cause analysis}, dan \textit{self-healing} yang telah diuraikan sebelumnya, dan secara langsung memverifikasi klaim efisiensi biaya yang menjadi salah satu motivasi desain arsitektur berlapis yang telah dibahas pada Bab II.
 
 \subsection{Pertimbangan Privasi dan Keamanan Data dalam Evaluasi}
 
-Pelaksanaan evaluasi ADMA melibatkan pengiriman data operasional dari lingkungan internal kampus (log aplikasi, metrik \textit{database}, dan cuplikan kode sumber untuk \textit{Code Fix Agent}) ke layanan LLM pihak ketiga (Claude API), sebagaimana dijelaskan mitigasinya secara desain pada 3.2.9. Dari sisi metodologi evaluasi, tiga langkah berikut diterapkan untuk membatasi risiko privasi selama pengujian:
+Pelaksanaan evaluasi ADMA melibatkan pengiriman data operasional dari lingkungan internal kampus (log aplikasi, metrik \textit{database}, dan cuplikan kode sumber untuk \textit{Code Fix Agent}) ke layanan LLM pihak ketiga (Claude API), sebagaimana telah dijelaskan mitigasinya secara desain pada bab ini. Dari sisi metodologi evaluasi, tiga langkah berikut diterapkan untuk membatasi risiko privasi selama pengujian:
 
 \begin{enumerate}[label=\arabic*., leftmargin=*]
-  \item \textbf{Evaluasi dilakukan sepenuhnya di lingkungan \textit{staging}}, bukan pada infrastruktur produksi FoodLAB yang melayani pengguna aktif (lihat pemisahan \textit{environment} pada pembuka Bab 3.4). Data yang diproses selama evaluasi adalah data yang dihasilkan dari simulasi anomali terkontrol, bukan data transaksi pengguna nyata.
-  \item \textbf{Persetujuan penggunaan lingkungan \textit{staging}} untuk keperluan pengujian ADMA diperoleh dari pihak pengelola FoodLAB atau dosen pembimbing terkait sebelum pelaksanaan evaluasi. Proses persetujuan ini memastikan bahwa penggunaan data operasional untuk keperluan penelitian sudah diketahui dan disetujui oleh pihak yang berwenang.
-  \item \textbf{Cakupan data dibatasi} hanya pada \textit{log} dan cuplikan kode yang relevan dengan insiden yang sedang diinvestigasi pada siklus RCA tersebut, bukan akses menyeluruh ke basis data atau seluruh \textit{repository} kode secara sekaligus, sejalan dengan mekanisme \texttt{IsSensitiveFile} yang sudah dijelaskan pada 3.2.9.
+  \item \textbf{Evaluasi dilakukan sepenuhnya di lingkungan \textit{staging}}, bukan pada infrastruktur produksi FoodLAB yang melayani pengguna aktif, sesuai pemisahan \textit{environment} yang telah dijelaskan sebelumnya. Data yang diproses selama evaluasi adalah data yang dihasilkan dari simulasi anomali terkontrol, bukan data transaksi pengguna nyata.
+  \item \textbf{Persetujuan penggunaan lingkungan \textit{staging}} untuk keperluan pengujian ADMA diperoleh dari pihak pengelola FoodLAB dan dosen pembimbing terkait sebelum pelaksanaan evaluasi. Proses persetujuan ini memastikan bahwa penggunaan data operasional untuk keperluan penelitian sudah diketahui dan disetujui oleh pihak yang berwenang.
+  \item \textbf{Cakupan data dibatasi} hanya pada \textit{log} dan cuplikan kode yang relevan dengan insiden yang sedang diinvestigasi pada siklus RCA tersebut, bukan akses menyeluruh ke basis data atau seluruh \textit{repository} kode secara sekaligus, sejalan dengan mekanisme \texttt{IsSensitiveFile} yang sudah dijelaskan sebelumnya.
 \end{enumerate}

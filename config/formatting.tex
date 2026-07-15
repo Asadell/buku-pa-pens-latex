@@ -98,7 +98,8 @@
   justification = centering,
   skip          = 6pt,
   name          = Gambar,
-  labelsep      = space
+  labelsep      = space,
+  belowskip     = -10pt
 }
 
 % ── Caption Tabel ────────────────────────────────────────────
@@ -246,6 +247,18 @@
 % ── Jarak (Spasi) Atas/Bawah Gambar dan Tabel ────────────────
 \setlength{\intextsep}{12pt}
 \setlength{\textfloatsep}{12pt}
+
+% ── Mencegah Caption Terpisah dari Gambar/Tabel ──────────────
+% \captionsetup dengan belowskip kecil agar caption selalu ikut objeknya.
+% Penalty tinggi mencegah page break antara float dan captionnya.
+\captionsetup{aboveskip=4pt, belowskip=4pt}
+
+% FloatBarrier otomatis di setiap \section dan \subsection
+% sehingga float tidak "terbang" melewati judul section berikutnya.
+\makeatletter
+\pretocmd{\section}{\FloatBarrier}{}{}
+\pretocmd{\subsection}{\FloatBarrier}{}{}
+\makeatother
 
 \setlength{\bibsep}{3pt}
 
